@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Xunit.Abstractions;
-using YmmeUtil;
+using YmmeUtil.Common;
 namespace tests;
 
 public class AssemblyUtilTest(ITestOutputHelper output)

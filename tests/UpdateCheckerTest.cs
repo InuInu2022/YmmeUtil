@@ -1,8 +1,6 @@
-using FluentAssertions;
-
 using Xunit.Abstractions;
 
-using YmmeUtil;
+using YmmeUtil.Common;
 
 namespace tests;
 
@@ -32,6 +30,8 @@ public class UpdateCheckerTest(ITestOutputHelper output)
 
 		//取得URLをゲットする
 		var url = await checker.GetDownloadUrlAsync(
+			//取得するファイル名（一部でもOK） ※実はプラグインファイル以外もOK
+			"YourAwesomePlugin.ymme",
 			//ダウンロードURLの取得に失敗したときに返すURL
 			//とりあえずreleasesのURLにしておけば手動でDLしてもらえる
 			"https://github.com/InuInu2022/YmmeUtil/releases"
