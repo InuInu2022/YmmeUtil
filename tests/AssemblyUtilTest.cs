@@ -9,7 +9,7 @@ public class AssemblyUtilTest(ITestOutputHelper output)
 	[Fact]
 	public void GetVersion()
 	{
-		var v = AssemblyUtil.GetVersion();
+		var v = AssemblyUtil.GetVersion(typeof(AssemblyUtilTest));
 		v.Should().NotBeNull();
 		v.Should().NotBe(new Version(0,0,0));
 		_output.WriteLine(v.ToString());
@@ -18,9 +18,9 @@ public class AssemblyUtilTest(ITestOutputHelper output)
 	[Fact]
 	public void GetVersionString()
 	{
-		var v = AssemblyUtil.GetVersionString();
+		var v = AssemblyUtil.GetVersionString(typeof(AssemblyUtilTest));
 		v.Should().NotBeNull();
 		v.Should().NotBeEmpty();
-		v.Should().Be(AssemblyUtil.GetVersion().ToString());
+		v.Should().Be(AssemblyUtil.GetVersion(typeof(AssemblyUtilTest)).ToString());
 	}
 }

@@ -64,9 +64,9 @@ public sealed class UpdateChecker
 	/// </summary>
 	/// <returns>アップデートが利用可能の場合はtrue、利用不可の場合はfalse。</returns>
 	public Task<bool>
-	IsAvailableAsync()
+	IsAvailableAsync(Type plugin)
 	{
-		var v = "v" + AssemblyUtil.GetVersionString();
+		var v = "v" + AssemblyUtil.GetVersionString(plugin);
 		return update.IsUpdateAvailableAsync(v);
 	}
 
