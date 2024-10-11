@@ -17,6 +17,6 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\YmmeUtil\YmmeUtil.csproj" />
+    <ProjectReference Include="..\src\YmmeUtil.Common\YmmeUtil.Common.csproj" />
   </ItemGroup>
 </Project>

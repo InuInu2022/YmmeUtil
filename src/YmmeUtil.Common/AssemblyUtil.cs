@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace YmmeUtil;
+namespace YmmeUtil.Common;
 
 public static class AssemblyUtil
 {

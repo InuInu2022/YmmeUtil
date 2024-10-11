@@ -5,7 +5,7 @@ using GithubReleaseDownloader;
 using GithubReleaseDownloader.Entities;
 using Mayerch1.GithubUpdateCheck;
 
-namespace YmmeUtil;
+namespace YmmeUtil.Common;
 
 public sealed class UpdateChecker
 {
@@ -70,7 +70,15 @@ public sealed class UpdateChecker
 		return update.IsUpdateAvailableAsync(v);
 	}
 
+	/// <summary>
+	/// 最新のgithub releaseからプラグインアセットを取得する
+	/// </summary>
+	/// <param name="fileName">DLしたい添付プラグインファイルの名前。一部でもOK</param>
+	/// <param name="fallbackUrl">取得に失敗したときに返すURL。</param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentException"></exception>
 	public async ValueTask<string> GetDownloadUrlAsync(
+		string fileName,
 		[Url] string fallbackUrl
 	)
 	{
@@ -84,7 +92,7 @@ public sealed class UpdateChecker
 
 		return release?
 			.Assets
-			.First(a => a.Name.Contains(RuntimeInformation.RuntimeIdentifier, StringComparison.OrdinalIgnoreCase))
+			.First(a => a.Name.Contains(fileName, StringComparison.OrdinalIgnoreCase))
 			.DownloadUrl
 			?? fallbackUrl;
 	}
