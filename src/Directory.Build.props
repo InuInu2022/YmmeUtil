@@ -135,7 +135,7 @@
   <!-- packages -->
   <ItemGroup>
     <!-- README -->
-    <Content Include="../../README.md">
+    <Content Include="../../README.md" LinkBase="Readme/YmmeUtil/">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
