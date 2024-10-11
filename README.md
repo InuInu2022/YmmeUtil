@@ -13,7 +13,9 @@ YMM4のプラグイン（`ymme`等）を開発するときに便利なユーテ�
 
 ## 使い方
 
-### `YmmeUtil`
+### `YmmeUtil.Common`
+
+YMM4の実装に依存しない便利クラスが入っています。
 
 - `AssemblyUtil.GetVersion()` / `GetVersionString()`
   - プラグインのクラスのType型を渡すことでプラグインのVersionを取得できます
@@ -25,9 +27,9 @@ YMM4のプラグイン（`ymme`等）を開発するときに便利なユーテ�
 
 ## ライブラリ
 
-- GithubReleaseDownloader
+- [GithubReleaseDownloader](https://github.com/russkyc/github-release-downloader/blob/master/LICENSE)
   - MIT License
   - Copyright (c) 2023 Russell Camo (@russkyc)
-- Mayerch1.GithubUpdateCheck
+- [Mayerch1.GithubUpdateCheck](https://github.com/Mayerch1/GithubUpdateCheck/blob/master/LICENSE)
   - MIT License
   - Copyright (c) 2020 Christian Mayer
