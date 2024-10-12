@@ -86,11 +86,19 @@ public sealed class UpdateChecker
 		if(!urlValidator.IsValid(fallbackUrl)){
 			throw new ArgumentException($"Invalid yrl: {fallbackUrl}", fallbackUrl);
 		}
-		release = await ReleaseManager.Instance
-			.GetLatestAsync(username, repository)
-			.ConfigureAwait(false);
 
-		if(release is null) return fallbackUrl;
+		try
+		{
+			release = await ReleaseManager.Instance
+				.GetLatestAsync(username, repository)
+				.ConfigureAwait(false);
+
+			if(release is null) return fallbackUrl;
+		}
+		catch (System.Exception)
+		{
+			return fallbackUrl;
+		}
 
 		return release
 			.Assets
