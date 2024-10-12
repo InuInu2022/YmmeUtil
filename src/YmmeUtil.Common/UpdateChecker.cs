@@ -100,8 +100,8 @@ public sealed class UpdateChecker
 			return fallbackUrl;
 		}
 
-		return release
-			.Assets
+		return release?
+			.Assets?
 			.FirstOrDefault(a => a.Name.Contains(fileName, StringComparison.OrdinalIgnoreCase))?
 			.DownloadUrl
 			?? fallbackUrl;
