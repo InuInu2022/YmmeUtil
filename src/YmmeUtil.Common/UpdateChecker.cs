@@ -90,7 +90,9 @@ public sealed class UpdateChecker
 			.GetLatestAsync(username, repository)
 			.ConfigureAwait(false);
 
-		return release?
+		if(release is null) return fallbackUrl;
+
+		return release
 			.Assets
 			.FirstOrDefault(a => a.Name.Contains(fileName, StringComparison.OrdinalIgnoreCase))?
 			.DownloadUrl
