@@ -13,10 +13,7 @@ public static class AssemblyUtil
 	{
 		try
         {
-            var pluginAssembly = pluginType.Assembly;
-            var pluginVersion = pluginAssembly?.GetName()?.Version;
-
-			return pluginVersion ?? new(0,0,0);
+			return new Version(GetString(pluginType));
         }
         catch (Exception ex)
         {
@@ -30,5 +27,16 @@ public static class AssemblyUtil
 	/// </summary>
 	/// <returns></returns>
     public static string GetVersionString(Type pluginType)
-		=> GetVersion(pluginType).ToString();
+		=> GetString(pluginType);
+
+	static string GetString(Type pluginType)
+	{
+		var pluginAssembly = pluginType.Assembly;
+		var pluginVersion = pluginAssembly?
+			.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute))
+			.Cast<AssemblyInformationalVersionAttribute>()
+			.FirstOrDefault()?
+			.InformationalVersion;
+		return pluginVersion ?? new Version(0,0,0).ToString();
+	}
 }
