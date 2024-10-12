@@ -92,7 +92,7 @@ public sealed class UpdateChecker
 
 		return release?
 			.Assets
-			.First(a => a.Name.Contains(fileName, StringComparison.OrdinalIgnoreCase))
+			.FirstOrDefault(a => a.Name.Contains(fileName, StringComparison.OrdinalIgnoreCase))?
 			.DownloadUrl
 			?? fallbackUrl;
 	}
