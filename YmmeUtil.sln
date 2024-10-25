@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9608CD9C-F85
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YmmeUtil.Common", "src\YmmeUtil.Common\YmmeUtil.Common.csproj", "{8D2777A0-8815-42AC-A42F-5FF4FF6DEDB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YmmeUtil.Ymm4", "src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj", "{9DFBB7F1-0845-4BF6-A97E-51903473DFAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,8 +28,13 @@ Global
 		{8D2777A0-8815-42AC-A42F-5FF4FF6DEDB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D2777A0-8815-42AC-A42F-5FF4FF6DEDB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D2777A0-8815-42AC-A42F-5FF4FF6DEDB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DFBB7F1-0845-4BF6-A97E-51903473DFAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DFBB7F1-0845-4BF6-A97E-51903473DFAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DFBB7F1-0845-4BF6-A97E-51903473DFAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DFBB7F1-0845-4BF6-A97E-51903473DFAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8D2777A0-8815-42AC-A42F-5FF4FF6DEDB3} = {9608CD9C-F856-492B-85F8-746185AAEFE1}
+		{9DFBB7F1-0845-4BF6-A97E-51903473DFAA} = {9608CD9C-F856-492B-85F8-746185AAEFE1}
 	EndGlobalSection
 EndGlobal
