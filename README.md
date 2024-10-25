@@ -13,6 +13,8 @@ YMM4のプラグイン（`ymme`等）を開発するときに便利なユーテ�
 
 ## 使い方
 
+複数のプロジェクトがあるので参照して使ってください。
+
 ### `YmmeUtil.Common`
 
 YMM4の実装に依存しない便利クラスが入っています。
@@ -24,6 +26,24 @@ YMM4の実装に依存しない便利クラスが入っています。
 - `UpdateChecker`
   - Githubのreleasesで配布されているYMM4プラグインの更新確認やDL URLの取得を行うクラス
   - 詳しくは `tests/UpdateCheckerTest.cs` をご覧ください！
+
+### `YmmeUtil.Ymm4`
+
+YMM4本体に依存する便利クラスが入っています。
+
+- `TaskbarUtil`
+  - タスクバーに進捗を表示するための処理が入っています
+    - プラグインの処理で時間が掛かる時など用
+  - `GetMainTaskbarInfo()`
+    - YMM4のメインウィンドウの`TaskbarInfo`を取得（ない場合は生成）
+  - `StartIndeterminate()` / `PauseIndeterminate()` / `FinishIndeterminate()`
+    - トータルの進捗が分からない時用の進捗表示
+  - `ShowError()`
+    - エラー表示
+  - `ShowNormal()`
+    - 通常表示
+  - `ShowProgress()` / `FinishProgress()`
+    - 進捗％表示
 
 ## ライブラリ
 
