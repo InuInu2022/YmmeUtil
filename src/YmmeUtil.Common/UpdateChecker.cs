@@ -67,7 +67,7 @@ public sealed class UpdateChecker
 	IsAvailableAsync(Type plugin)
 	{
 		var v = "v" + AssemblyUtil.GetVersionString(plugin);
-		return update.IsUpdateAvailableAsync(v);
+		return update.IsUpdateAvailableAsync(v, VersionChange:VersionChange.Build);
 	}
 
 	/// <summary>

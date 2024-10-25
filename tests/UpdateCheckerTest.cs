@@ -14,6 +14,8 @@ public class UpdateCheckerTest(ITestOutputHelper output)
 		var checker = UpdateChecker
 			.Build("InuInu2022", "YmmeUtil");
 
+		_output.WriteLine("local: v" + AssemblyUtil.GetVersionString(typeof(UpdateChecker)));
+
 		// ローカルバージョンがリポジトリの最新バージョンと比較して
 		// アップデートが利用可能かどうかを非同期で確認します。
 		var isAvailable = await checker.IsAvailableAsync(

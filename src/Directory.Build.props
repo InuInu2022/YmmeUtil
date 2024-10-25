@@ -61,37 +61,37 @@
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <PackageReference
        Include="Roslynator.Analyzers"
-       Version="4.12.7">
+       Version="4.12.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference
        Include="Roslynator.CodeAnalysis.Analyzers"
-       Version="4.12.7">
+       Version="4.12.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference
        Include="Roslynator.Formatting.Analyzers"
-       Version="4.12.7">
+       Version="4.12.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference
        Include="Roslynator.CodeFixes"
-       Version="4.12.7">
+       Version="4.12.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference
        Include="Roslynator.Refactorings"
-       Version="4.12.7">
+       Version="4.12.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference
        Include="Meziantou.Analyzer"
-       Version="2.0.169">
+       Version="2.0.176">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
