@@ -5,6 +5,10 @@ namespace YmmeUtil.Ymm4;
 
 public static class TaskbarUtil
 {
+	/// <summary>
+	/// YMM4のメインウィンドウの`TaskbarInfo`を取得（ない場合は生成）
+	/// </summary>
+	/// <returns></returns>
 	public static TaskbarItemInfo GetMainTaskbarInfo()
 	{
 		var main = Application.Current.MainWindow;
@@ -30,6 +34,45 @@ public static class TaskbarUtil
 	{
 		taskbar ??= GetMainTaskbarInfo();
 
+		taskbar.ProgressState = TaskbarItemProgressState.None;
+	}
+
+	/// <summary>
+	/// エラーがあったとき
+	/// </summary>
+	/// <param name="taskbar"></param>
+	public static void ShowError(TaskbarItemInfo? taskbar = null)
+	{
+		taskbar ??= GetMainTaskbarInfo();
+
+		taskbar.ProgressState = TaskbarItemProgressState.Error;
+	}
+
+	public static void ShowNormal(TaskbarItemInfo? taskbar = null)
+	{
+		taskbar ??= GetMainTaskbarInfo();
+
+		taskbar.ProgressState = TaskbarItemProgressState.Normal;
+	}
+
+	public static void ShowProgress(
+		double percent,
+		TaskbarItemInfo? taskbar = null
+	)
+	{
+		taskbar ??= GetMainTaskbarInfo();
+		if(taskbar.ProgressState != TaskbarItemProgressState.Normal)
+		{
+			taskbar.ProgressState = TaskbarItemProgressState.Normal;
+		}
+		taskbar.ProgressValue = percent;
+	}
+
+	public static void FinishProgress(
+		TaskbarItemInfo? taskbar = null
+	)
+	{
+		taskbar ??= GetMainTaskbarInfo();
 		taskbar.ProgressState = TaskbarItemProgressState.None;
 	}
 }
