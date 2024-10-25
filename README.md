@@ -38,6 +38,7 @@ YMM4本体に依存する便利クラスが入っています。
     - YMM4のメインウィンドウの`TaskbarInfo`を取得（ない場合は生成）
   - `StartIndeterminate()` / `PauseIndeterminate()` / `FinishIndeterminate()`
     - トータルの進捗が分からない時用の進捗表示
+    - ![indeterminate](./docs/taskbar_indeterminate.gif)
   - `ShowError()`
     - エラー表示
   - `ShowNormal()`
