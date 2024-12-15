@@ -8,7 +8,7 @@ public class UpdateCheckerTest(ITestOutputHelper output)
 {
 	private readonly ITestOutputHelper _output = output;
 	[Fact]
-	public async void SimpleCheck()
+	public async Task SimpleCheck()
 	{
 		//チェックするgithubリポジトリ
 		var checker = UpdateChecker

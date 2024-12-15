@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>12.0</LangVersion>
-    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>13.0</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
@@ -91,7 +91,7 @@
     </PackageReference>
     <PackageReference
        Include="Meziantou.Analyzer"
-       Version="2.0.177">
+       Version="2.0.182">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -113,7 +113,7 @@
     </PackageReference>
     <PackageReference
        Include="Microsoft.VisualStudio.Threading.Analyzers"
-       Version="17.11.20">
+       Version="17.12.19">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -127,7 +127,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SatorImaging.StaticMemberAnalyzer" Version="1.4.0">
+    <PackageReference Include="SatorImaging.StaticMemberAnalyzer" Version="2.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
