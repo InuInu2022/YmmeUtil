@@ -11,7 +11,7 @@ public static class TaskbarUtil
 	/// <returns></returns>
 	public static TaskbarItemInfo GetMainTaskbarInfo()
 	{
-		var main = Application.Current.MainWindow;
+		var main = Application.Current.MainWindow ?? Application.Current.Windows[0];
 		main.TaskbarItemInfo ??= new TaskbarItemInfo();
 		return main.TaskbarItemInfo;
 	}
