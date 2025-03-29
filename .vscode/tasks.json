@@ -1,0 +1,41 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build_sandboxwithymm4",
+			"command": "dotnet",
+			"type": "shell",
+			"args": [
+				"build",
+                "${workspaceFolder}/sandbox/plugin/WithYmm4/WithYmm4.csproj",
+				// Ask dotnet build to generate full paths for file names.
+				"/property:GenerateFullPaths=true",
+				// Do not generate summary otherwise it leads to duplicate errors in Problems panel
+				"/consoleloggerparameters:NoSummary"
+			],
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+        {
+			"label": "build_sandboxcommon",
+			"command": "dotnet",
+			"type": "shell",
+			"args": [
+				"build",
+                "${workspaceFolder}/sandbox/plugin/Common/Common.csproj",
+				// Ask dotnet build to generate full paths for file names.
+				"/property:GenerateFullPaths=true",
+				// Do not generate summary otherwise it leads to duplicate errors in Problems panel
+				"/consoleloggerparameters:NoSummary"
+			],
+			"group": "build",
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$msCompile"
+		},
+	]
+}

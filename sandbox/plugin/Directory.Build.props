@@ -16,8 +16,6 @@
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
 
-
-
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>$(NoWarn);MSB3277</NoWarn>
 
@@ -34,4 +32,26 @@
       <CopyLocal>false</CopyLocal>
     </Reference>
   </ItemGroup>
+
+  <!-- MS Build settings -->
+  <Target Name="RemovePublishDirBeforeBuild" BeforeTargets="BeforeBuild">
+    <RemoveDir Directories="$(YMM4_PATH)\user\plugin\$(AssemblyName)\" />
+    <Message Text="RemovePublishDirBeforeBuild" Importance="high" />
+  </Target>
+  <Target Name="CopyDebugDlls" BeforeTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
+    <ItemGroup>
+      <CommonPaths Include="$(OutputPath)../../Debug/$(TargetFramework)/publish" />
+      <MissingDlls Include="$(CommonPaths)/*.dll" Exclude="$(CommonPaths)/$(AssemblyName).dll" />
+      <MissingPdbs Include="$(CommonPaths)/*.pdb" Exclude="$(CommonPaths)/$(AssemblyName).pdb" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MissingDlls)" DestinationFiles="@(MissingDlls->'$(OutputPath)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(MissingPdbs)" DestinationFiles="@(MissingPdbs->'$(OutputPath)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <SourceFiles Include="$(OutputPath)**/*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(SourceFiles->'$(YMM4_PATH)\user\plugin\$(AssemblyName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+    <Message Text="Dlls @(MissingDlls)" Importance="high" />
+    <Message Text="PDBs @(MissingPdbs)" Importance="high" />
+  </Target>
 </Project>
