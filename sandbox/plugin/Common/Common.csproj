@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\YmmeUtil.Common\YmmeUtil.Common.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+
+  </PropertyGroup>
+
+</Project>
