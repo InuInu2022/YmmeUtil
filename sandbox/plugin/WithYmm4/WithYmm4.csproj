@@ -5,4 +5,12 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Epoxy.Wpf" Version="1.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj" />
+  </ItemGroup>
+
 </Project>
