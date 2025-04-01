@@ -11,9 +11,44 @@ public static class WindowUtil
 	/// </summary>
 	public static void FocusBack()
 	{
-		if (FocusHelper.DefaultFocus is null){return;}
+		if (FocusHelper.DefaultFocus is null) { return; }
 
 		Window.GetWindow(FocusHelper.DefaultFocus).Activate();
 		FocusHelper.FocusWindowContent(FocusHelper.DefaultFocus);
 	}
+
+	/// <summary>
+	/// YMM4のメインウィンドウを取得します
+	/// </summary>
+	/// <returns></returns>
+	public static Window GetYmmMainWindow()
+	{
+		return GetWindows()
+			.First(w =>
+				string.Equals(
+					w.GetType().FullName,
+					"YukkuriMovieMaker.Views.MainView",
+					StringComparison.Ordinal
+				)
+			);
+	}
+
+	public static Window? GetToolWindow(string windowName)
+	{
+		return GetWindows()
+			.FirstOrDefault(w =>
+				w.Title is not null
+				&& (w.Title?.Length == 0
+					|| w.Title!.Contains(windowName, StringComparison.Ordinal))
+			);
+	}
+
+	static IEnumerable<Window> GetWindows()
+	{
+		List<dynamic> windows = [.. Application.Current.Windows];
+		return windows
+			.OfType<Window>();
+	}
+
+
 }
