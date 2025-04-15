@@ -60,7 +60,7 @@ public sealed class UpdateChecker
 	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[Obsolete($"Use {nameof(GetRepositoryVersionAsync)}", false)]
-	internal string GetRepositoryVersion(bool useCache = false)
+	public string GetRepositoryVersion(bool useCache = false)
 	{
 		return GetRepositoryVersionAsync(useCache).AsTask().Result;
 	}
@@ -81,7 +81,7 @@ public sealed class UpdateChecker
 	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[Obsolete($"Use {nameof(IsAvailableAsync)}", false)]
-	internal bool IsAvailable(Type plugin)
+	public bool IsAvailable(Type plugin)
 	{
 		return IsAvailableAsync(plugin).Result;
 	}
@@ -124,7 +124,7 @@ public sealed class UpdateChecker
 	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[Obsolete($"Use {nameof(GetDownloadUrlAsync)}", false)]
-	internal string GetDownloadUrl(string fileName, [Url] string fallbackUrl)
+	public string GetDownloadUrl(string fileName, [Url] string fallbackUrl)
 	{
 		return GetDownloadUrlAsync(fileName, fallbackUrl).AsTask().Result;
 	}
