@@ -55,13 +55,7 @@ public sealed class UpdateChecker
 		return repoVersion;
 	}
 
-	[SuppressMessage("Correctness", "SS034", Justification = "<保留中>")]
-	[SuppressMessage("Usage", "VSTHRD002", Justification = "<保留中>")]
-	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
-	public string GetRepositoryVersion(bool useCache = false)
-	{
-		return GetRepositoryVersionAsync(useCache).AsTask().Result;
-	}
+
 
 	/// <summary>
 	/// ローカルバージョンがリポジトリの最新バージョンと比較して
@@ -72,14 +66,6 @@ public sealed class UpdateChecker
 	{
 		var v = "v" + AssemblyUtil.GetVersionString(plugin);
 		return update.IsUpdateAvailableAsync(v, VersionChange: VersionChange.Build);
-	}
-
-	[SuppressMessage("Correctness", "SS034", Justification = "<保留中>")]
-	[SuppressMessage("Usage", "VSTHRD002", Justification = "<保留中>")]
-	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
-	public bool IsAvailable(Type plugin)
-	{
-		return IsAvailableAsync(plugin).Result;
 	}
 
 	/// <summary>
@@ -113,13 +99,5 @@ public sealed class UpdateChecker
 		{
 			return fallbackUrl;
 		}
-	}
-
-	[SuppressMessage("Correctness", "SS034", Justification = "<保留中>")]
-	[SuppressMessage("Usage", "VSTHRD002", Justification = "<保留中>")]
-	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
-	public string GetDownloadUrl(string fileName, [Url] string fallbackUrl)
-	{
-		return GetDownloadUrlAsync(fileName, fallbackUrl).AsTask().Result;
 	}
 }
