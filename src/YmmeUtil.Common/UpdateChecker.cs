@@ -59,7 +59,7 @@ public sealed class UpdateChecker
 	[SuppressMessage("Usage", "VSTHRD002", Justification = "<保留中>")]
 	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	[Obsolete($"Use {nameof(GetRepositoryVersionAsync)}", false)]
+	//[Obsolete($"Use {nameof(GetRepositoryVersionAsync)}", false)]
 	public string GetRepositoryVersion(bool useCache = false)
 	{
 		return GetRepositoryVersionAsync(useCache).AsTask().Result;
@@ -80,7 +80,7 @@ public sealed class UpdateChecker
 	[SuppressMessage("Usage", "VSTHRD002", Justification = "<保留中>")]
 	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	[Obsolete($"Use {nameof(IsAvailableAsync)}", false)]
+	//[Obsolete($"Use {nameof(IsAvailableAsync)}", false)]
 	public bool IsAvailable(Type plugin)
 	{
 		return IsAvailableAsync(plugin).Result;
@@ -123,7 +123,7 @@ public sealed class UpdateChecker
 	[SuppressMessage("Usage", "VSTHRD002", Justification = "<保留中>")]
 	[SuppressMessage("Info Code Smell", "S1133", Justification = "<保留中>")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	[Obsolete($"Use {nameof(GetDownloadUrlAsync)}", false)]
+	//[Obsolete($"Use {nameof(GetDownloadUrlAsync)}", false)]
 	public string GetDownloadUrl(string fileName, [Url] string fallbackUrl)
 	{
 		return GetDownloadUrlAsync(fileName, fallbackUrl).AsTask().Result;
