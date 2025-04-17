@@ -15,7 +15,7 @@
         <StackPanel>
             <Button Content="TaskbarUtil" Command="{Binding TaskbarUtilCommand}" Margin="5,5,5,0" />
             <Button Content="WindowUtil" Command="{Binding WindowUtilCommand}" Margin="5,5,5,0" />
-            <Button Content="Button3" Margin="5,5,5,0" />
+            <Button Content="TimelineUtil" Command="{Binding TimelineUtilCommand}" Margin="5,5,5,0" />
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-
 using Epoxy;
 using YmmeUtil.Ymm4;
 
@@ -11,15 +10,21 @@ public class MainViewModel
 	public Command? Ready { get; set; }
 	public Command? TaskbarUtilCommand { get; set; }
 	public Command? WindowUtilCommand { get; set; }
+	public Command? TimelineUtilCommand { get; set; }
+
 	public MainViewModel()
 	{
 		Ready = Command.Factory.Create(() =>
 		{
-
 			return default;
 		});
+		TaskbarUtilCommand = TestTaskbarUtils();
+		WindowUtilCommand = TestWindowUtils();
+		TimelineUtilCommand = TestTimelineUtils();
+	}
 
-		TaskbarUtilCommand = Command.Factory.Create(async () =>
+	static Command TestTaskbarUtils() =>
+		Command.Factory.Create(async () =>
 		{
 			var taskbar = TaskbarUtil.GetMainTaskbarInfo();
 			TaskbarUtil.StartIndeterminate(taskbar);
@@ -42,7 +47,9 @@ public class MainViewModel
 			await Task.Delay(1000);
 			TaskbarUtil.FinishProgress(taskbar);
 		});
-		WindowUtilCommand = Command.Factory.Create(() =>
+
+	static Command TestWindowUtils() =>
+		Command.Factory.Create(() =>
 		{
 			try
 			{
@@ -58,5 +65,42 @@ public class MainViewModel
 			}
 			return default;
 		});
-	}
+
+	static Command TestTimelineUtils() =>
+		Command.Factory.Create(() =>
+		{
+			try
+			{
+				var hasTL = TimelineUtil.TryGetTimeline(out var timeLine);
+				Debug.Assert(hasTL, "YMM4のタイムラインが取得できませんでした。");
+				if (!hasTL) return default;
+
+				Debug.Assert(timeLine is not null, "YMM4のタイムラインが取得できませんでした。");
+				if (timeLine is null) return default;
+
+				//get
+				Debug.WriteLine($"Timeline ID: {timeLine.Id}");
+				Debug.WriteLine($"Timeline Name: {timeLine.Name}");
+				Debug.WriteLine($"Timeline CurrentFrame: {timeLine.CurrentFrame}");
+				Debug.WriteLine($"Timeline Length: {timeLine.Length}");
+				Debug.WriteLine($"Timeline MaxLayer: {timeLine.MaxLayer}");
+				timeLine.Items.ToList()
+					.ForEach(item => Debug.WriteLine($"Timeline Item: {item}"));
+				Debug.WriteLine($"Timeline : \n\t {timeLine}");
+
+				//set
+				timeLine.Name = "Test";
+				Debug.WriteLine($"Timeline Name: {timeLine.Name}");
+
+				timeLine.CurrentFrame = 100;
+				Debug.WriteLine($"Timeline CurrentFrame: {timeLine.CurrentFrame}");
+
+			}
+			catch (System.Exception e)
+			{
+				Debug.WriteLine($"{e.Message} {e.StackTrace}");
+			}
+			return default;
+		});
+
 }
