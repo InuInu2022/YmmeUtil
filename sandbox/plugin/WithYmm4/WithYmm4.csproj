@@ -10,7 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj" />
+    <ProjectReference Include="..\..\..\src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj">
+      <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
