@@ -11,9 +11,11 @@
   <ItemGroup>
     <ProjectReference Include="..\YmmeUtil.Common\YmmeUtil.Common.csproj">
       <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
     </ProjectReference>
     <ProjectReference Include="..\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj">
       <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
     </ProjectReference>
   </ItemGroup>
 </Project>
