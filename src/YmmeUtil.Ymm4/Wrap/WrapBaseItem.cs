@@ -1,6 +1,7 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Windows.Media;
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Exo;
@@ -192,5 +193,10 @@ public partial record WrapBaseItem
 	public IAsyncEnumerable<ExoItem> GetExoItemsAsync(ExoOutputDescription outputDescription)
 	{
 		return _item.GetExoItemsAsync(outputDescription);
+	}
+
+	public string ToJson()
+	{
+		return JsonSerializer.Serialize(_item, new JsonSerializerOptions { WriteIndented = true });
 	}
 }

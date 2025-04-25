@@ -17,4 +17,7 @@
       <CopyLocal>false</CopyLocal>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ImpromptuInterface" Version="8.0.6" />
+  </ItemGroup>
 </Project>

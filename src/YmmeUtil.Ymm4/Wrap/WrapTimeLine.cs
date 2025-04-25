@@ -1,4 +1,7 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+
+using YmmeUtil.Ymm4.Internal;
 
 namespace YmmeUtil.Ymm4.Wrap;
 
@@ -7,6 +10,12 @@ namespace YmmeUtil.Ymm4.Wrap;
 /// </summary>
 public partial record WrapTimeLine
 {
+	/// <summary>
+	/// タイムラインの動的オブジェクト。
+	/// <para>YMM4本体の実装に依存するため、基本的には直接使用しないでください。</para>
+	/// </summary>
+	public dynamic RawTimeline => _timeline;
+
 	// 以下はYMM4本体側の実装が変わってもいいように
 	// ラップしたプロパティ
 
@@ -28,14 +37,21 @@ public partial record WrapTimeLine
 
 	#region Item
 	//--------------------------------------------------------+
-	public IEnumerable<WrapBaseItem> Items
+	public ImmutableList<WrapBaseItem> Items
 	{
 		get
 		{
-			var items = (IEnumerable<dynamic>)_timeline.Items;
-			return items.Select(i => new WrapBaseItem(i));
+			return Reflect.GetImmutableListProp<WrapBaseItem>(
+				_timeline,
+				nameof(Items),
+				factory: (Func<dynamic, WrapBaseItem>)(item => new WrapBaseItem(item))
+			);
 		}
-		set => _timeline.Items = value;
+
+		set
+		{
+			Reflect.SetImmutableListProp<WrapBaseItem>(_timeline, nameof(Items), value);
+		}
 	}
 	public WrapBaseItem SelectedItem => new(_timeline.SelectedItem);
 	public IEnumerable<WrapBaseItem> SelectedItems

@@ -91,7 +91,7 @@
     </PackageReference>
     <PackageReference
        Include="Meziantou.Analyzer"
-       Version="2.0.196">
+       Version="2.0.197">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -141,7 +141,7 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
 
-    <PackageReference Include="MinVer" Version="5.0.0">
+    <PackageReference Include="MinVer" Version="6.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
