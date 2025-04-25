@@ -85,8 +85,8 @@ public class MainViewModel
 				Debug.WriteLine($"Timeline Length: {timeLine.Length}");
 				Debug.WriteLine($"Timeline MaxLayer: {timeLine.MaxLayer}");
 				timeLine.Items.ToList()
-					.ForEach(item => Debug.WriteLine($"Timeline Item: {item}"));
-				Debug.WriteLine($"Timeline : \n\t {timeLine}");
+					.ForEach(item => Debug.WriteLine($"Timeline Item:\n\t {item}"));
+				//Debug.WriteLine($"Timeline : \n\t {timeLine}");
 
 				//set
 				timeLine.Name = "Test";
@@ -94,6 +94,10 @@ public class MainViewModel
 
 				timeLine.CurrentFrame = 100;
 				Debug.WriteLine($"Timeline CurrentFrame: {timeLine.CurrentFrame}");
+
+				//timeLine.Items = [];
+				timeLine.Items.ToList()
+					.ForEach(item => Debug.WriteLine($"Timeline Item:\n\t {item}"));
 
 			}
 			catch (System.Exception e)
