@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 using Dynamitey;
@@ -10,6 +11,12 @@ namespace YmmeUtil.Ymm4;
 
 public static class TimelineUtil
 {
+	// 型情報のキャッシュ用ディクショナリ
+	static readonly ConcurrentDictionary<string, Type> _typeCache = new(StringComparer.Ordinal);
+
+	// 最初に取得したIItem型をキャッシュ
+	static Type? _cachedItemType;
+
 	/// <summary>
 	/// YMM4のメインウィンドウの`Timeline`を取得を試す
 	/// </summary>
@@ -66,47 +73,70 @@ public static class TimelineUtil
 
 		try
 		{
-			// リフレクションでAddItemsメソッドを探す
-			var timelineType = timeline.RawTimeline.GetType();
-			var addItemsMethod = timelineType.GetMethod(
-				"AddItems",
-				System.Reflection.BindingFlags.Instance
-					| System.Reflection.BindingFlags.Public
-					| System.Reflection.BindingFlags.NonPublic
-			);
+			// キャッシュされたIItem型を使用するか、新たに取得してキャッシュ
+			Type itemType = GetCachedItemType(timeline.RawTimeline);
+			dynamic itemsList = Dynamic.InvokeConstructor(typeof(List<>).MakeGenericType(itemType));
 
-			if (addItemsMethod != null)
+			// RawItemをリストに追加
+			foreach (var item in items)
 			{
-				var paramType = addItemsMethod.GetParameters()[0].ParameterType;
-				var elementType = paramType.GenericTypeArguments[0]; // IEnumerable<T>のT型を取得
-
-				// 型付きリストを動的に作成
-				var listType = typeof(List<>).MakeGenericType(elementType);
-				var typedList = Activator.CreateInstance(listType);
-
-				// Add メソッドを取得
-				var addMethod = listType.GetMethod("Add");
-
-				// 各アイテムをリストに追加
-				foreach (var item in items)
+				if (item?.RawItem != null)
 				{
-					if (item?.RawItem != null)
-					{
-						addMethod.Invoke(typedList, new[] { item.RawItem });
-					}
+					Dynamic.InvokeMemberAction(itemsList, "Add", item.RawItem);
 				}
-
-				// メソッドを呼び出す
-				Dynamic.InvokeMemberAction(timeline.RawTimeline, "AddItems", typedList);
-				return true;
 			}
-			Debug.WriteLine("AddItemsメソッドが見つかりませんでした。");
-			return false;
+
+			// AddItemsメソッドを動的に呼び出す
+			Dynamic.InvokeMemberAction(timeline.RawTimeline, "AddItems", itemsList);
+			return true;
 		}
 		catch (Exception ex)
 		{
 			Debug.WriteLine($"アイテム追加中にエラーが発生しました: {ex.Message}");
 			return false;
 		}
+	}
+	// IItem型を取得してキャッシュするメソッド
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011")]
+	static Type GetCachedItemType(dynamic timeline)
+	{
+		// キャッシュがあればそれを返す
+		if (_cachedItemType != null)
+			return _cachedItemType;
+
+		// キャッシュがなければ動的に取得
+		var timelineType = timeline.GetType();
+		var addItemsMethod = timelineType.GetMethod(
+			"AddItems",
+			System.Reflection.BindingFlags.Instance
+				| System.Reflection.BindingFlags.Public
+				| System.Reflection.BindingFlags.NonPublic
+		)
+			?? throw new InvalidOperationException("AddItemsメソッドが見つかりません");
+		var paramType = addItemsMethod.GetParameters()[0].ParameterType;
+		var elementType = paramType.GetGenericArguments()[0];
+
+		// 型をキャッシュして返す
+		_cachedItemType = elementType;
+		return elementType;
+	}
+
+	// 型名から型を取得してキャッシュするメソッド
+	static Type GetOrCreateType(string typeName, dynamic referenceObject)
+	{
+		return _typeCache.GetOrAdd(
+			typeName,
+			name =>
+			{
+				// 参照オブジェクトと同じアセンブリから型を取得
+				var assembly = referenceObject.GetType().Assembly;
+				var type = assembly.GetType(name);
+
+				if (type == null)
+					throw new TypeLoadException($"型 '{name}' が見つかりません");
+
+				return type;
+			}
+		);
 	}
 }
