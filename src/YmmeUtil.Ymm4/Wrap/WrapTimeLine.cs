@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 
 using YmmeUtil.Ymm4.Internal;
+using YmmeUtil.Ymm4.Wrap.Items;
 
 namespace YmmeUtil.Ymm4.Wrap;
 
@@ -37,38 +38,43 @@ public partial record WrapTimeLine
 
 	#region Item
 	//--------------------------------------------------------+
-	public ImmutableList<WrapBaseItem> Items
+	public ImmutableList<IWrapBaseItem> Items
 	{
 		get
 		{
-			return Reflect.GetImmutableListProp<WrapBaseItem>(
+			return Reflect.GetImmutableListProp<IWrapBaseItem>(
 				_timeline,
 				nameof(Items),
-				factory: (Func<dynamic, WrapBaseItem>)(item => new WrapBaseItem(item))
+				factory: (Func<dynamic, IWrapBaseItem>)(item => ItemFactory.Create(item))
 			);
 		}
 
 		set
 		{
-			Reflect.SetImmutableListProp<WrapBaseItem>(_timeline, nameof(Items), value);
-		}
-	}
-	public WrapBaseItem SelectedItem => new(_timeline.SelectedItem);
-	public IEnumerable<WrapBaseItem> SelectedItems
-	{
-		get
-		{
-			var items = (IEnumerable<dynamic>)_timeline.SelectedItems;
-			return items.Select(i => new WrapBaseItem(i));
+			Reflect.SetImmutableListProp<IWrapBaseItem>(_timeline, nameof(Items), value);
 		}
 	}
 
-	public IEnumerable<WrapBaseItem> SelectedAndGroupedItems
+	public IWrapBaseItem SelectedItem => ItemFactory.Create(_timeline.SelectedItem);
+
+	public IEnumerable<IWrapBaseItem> SelectedItems
 	{
 		get
 		{
-			var items = (IEnumerable<WrapBaseItem>)_timeline.SelectedAndGroupedItems;
-			return items.Select<dynamic, WrapBaseItem>(i => new WrapBaseItem(i));
+			return Reflect.GetImmutableListProp<IWrapBaseItem>(
+				_timeline,
+				nameof(SelectedItems),
+				factory: (Func<dynamic, IWrapBaseItem>)(item => ItemFactory.Create(item))
+			);
+		}
+	}
+
+	public IEnumerable<IWrapBaseItem> SelectedAndGroupedItems
+	{
+		get
+		{
+			var items = (IEnumerable<dynamic>)_timeline.SelectedAndGroupedItems;
+			return items.Select<dynamic, IWrapBaseItem>(i => ItemFactory.Create(i));
 		}
 		set => _timeline.SelectedAndGroupedItems = value;
 	}

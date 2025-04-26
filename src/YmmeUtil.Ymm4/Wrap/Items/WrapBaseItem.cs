@@ -1,15 +1,17 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Text.Json;
 using System.Windows.Media;
+using YmmeUtil.Ymm4.Internal;
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Exo;
 using YukkuriMovieMaker.ItemEditor;
 using YukkuriMovieMaker.Project;
 using YukkuriMovieMaker.UndoRedo;
 
-namespace YmmeUtil.Ymm4.Wrap;
+namespace YmmeUtil.Ymm4.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.BaseItem
@@ -20,80 +22,101 @@ public partial record WrapBaseItem
 		INotifyDataErrorInfo,
 		IUndoRedoable,
 		IEditable,
-		IFileItem
+		IFileItem,
+		IWrapBaseItem
 {
-	public dynamic RawItem => _item;
+	public dynamic RawItem => Item;
+	public virtual string RawItemTypeName
+		=> "YukkuriMovieMaker.Project.Items.BaseItem";
 
 	// 以下はYMM4本体側の実装が変わってもいいように
 	// ラップしたプロパティ
 
-	public bool HasErrors => _item.HasErrors;
+	public bool HasErrors => Item.HasErrors;
 	public bool IsHidden
 	{
-		get => _item.IsHidden;
-		set => _item.IsHidden = value;
+		get => Item.IsHidden;
+		set => Item.IsHidden = value;
 	}
 	public bool IsLocked
 	{
-		get => _item.IsLocked;
-		set => _item.IsLocked = value;
+		get => Item.IsLocked;
+		set => Item.IsLocked = value;
 	}
 	public int Group
 	{
-		get => _item.Group;
-		set => _item.Group = value;
+		get => Item.Group;
+		set => Item.Group = value;
 	}
-	public KeyFrames KeyFrames => _item.KeyFrames;
+	public KeyFrames KeyFrames => Item.KeyFrames;
 	public int Frame
 	{
-		get => _item.Frame;
-		set => _item.Frame = value;
+		get => Item.Frame;
+		set => Item.Frame = value;
 	}
 	public int Length
 	{
-		get => _item.Length;
-		set => _item.Length = value;
+		get => Item.Length;
+		set => Item.Length = value;
 	}
 	public int Layer
 	{
-		get => _item.Layer;
-		set => _item.Layer = value;
+		get => Item.Layer;
+		set => Item.Layer = value;
 	}
 	public double PlaybackRate
 	{
-		get => _item.PlaybackRate;
-		set => _item.PlaybackRate = value;
+		get => Item.PlaybackRate;
+		set => Item.PlaybackRate = value;
 	}
 	public TimeSpan ContentOffset
 	{
-		get => _item.ContentOffset;
-		set => _item.ContentOffset = value;
+		get => Item.ContentOffset;
+		set => Item.ContentOffset = value;
 	}
-	public TimeSpan ContentLength => _item.ContentLength;
-	public IEnumerable<TimeSpan> ContentSeparations => _item.ContentSeparations;
-	public string Label => _item.Label;
-	public string Description => _item.Description;
+	public TimeSpan ContentLength => Item.ContentLength;
+	public IEnumerable<TimeSpan> ContentSeparations => Item.ContentSeparations;
+	public string Label => Item.Label;
+	public string Description => Item.Description;
 	public string Remark
 	{
-		get => _item.Remark;
-		set => _item.Remark = value;
+		get => Item.Remark;
+		set => Item.Remark = value;
 	}
 	public Color ItemColor
 	{
-		get => _item.ItemColor;
-		set => _item.ItemColor = value;
+		get => Item.ItemColor;
+		set => Item.ItemColor = value;
 	}
+
+	protected dynamic Item { get; init; }
 
 	public event PropertyChangedEventHandler? PropertyChanged;
 	public event PropertyChangingEventHandler? PropertyChanging;
 	public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 	public event EventHandler<UndoRedoEventArgs>? UndoRedoCommandCreated;
 
-	readonly dynamic _item;
-
 	public WrapBaseItem(dynamic item)
 	{
-		_item = item;
+		Item = item;
+	}
+
+	public WrapBaseItem()
+	{
+		var ymmModel = WindowUtil.GetYmmMainWindow();
+		Debug.WriteLine($"RawItemTypeName: {RawItemTypeName}");
+		Type? itemType = null;
+		try
+		{
+			itemType = ymmModel.GetType().Assembly.GetType(RawItemTypeName);
+		}
+		catch (System.Exception)
+		{
+			Console.WriteLine($"RawItemTypeName: {RawItemTypeName} not found.");
+		}
+		itemType ??= typeof(ExpandoObject);
+		var rawItem = Activator.CreateInstance(itemType);
+		Item = rawItem ?? new ExpandoObject();
 	}
 
 	/// <summary>
@@ -106,7 +129,7 @@ public partial record WrapBaseItem
 	{
 		try
 		{
-			dynamicValue = Internal.Reflect.GetProp(_item, propName);
+			dynamicValue = Internal.Reflect.GetProp(Item, propName);
 		}
 		catch (Exception e)
 		{
@@ -127,7 +150,7 @@ public partial record WrapBaseItem
 	{
 		try
 		{
-			dynamicValue = Internal.Reflect.GetField(_item, fieldName);
+			dynamicValue = Internal.Reflect.GetField(Item, fieldName);
 		}
 		catch (Exception e)
 		{
@@ -141,62 +164,62 @@ public partial record WrapBaseItem
 	/// <inheritdoc/>
 	public void BeginEdit()
 	{
-		_item.BeginEdit();
+		Item.BeginEdit();
 	}
 
 	/// <inheritdoc/>
 	public async ValueTask EndEditAsync()
 	{
-		await _item.EndEditAsync();
+		await Item.EndEditAsync();
 	}
 
 	/// <inheritdoc/>
 	public IEnumerable<string> GetFiles()
 	{
-		return _item.GetFiles();
+		return Item.GetFiles();
 	}
 
 	/// <inheritdoc/>
 	public void ReplaceFile(string from, string to)
 	{
-		_item.ReplaceFile(from, to);
+		Item.ReplaceFile(from, to);
 	}
 
 	/// <inheritdoc/>
 	public IEnumerable<TimelineResource> GetResources()
 	{
-		return _item.GetResources();
+		return Item.GetResources();
 	}
 
 	/// <inheritdoc/>
 	public IEnumerable GetErrors(string? propertyName)
 	{
-		return _item.GetErrors(propertyName);
+		return Item.GetErrors(propertyName);
 	}
 
 	public WrapBaseItem GetClone()
 	{
-		return new(_item.GetClone());
+		return new(Item.GetClone());
 	}
 
 	public (WrapBaseItem left, WrapBaseItem right) Split(int frame)
 	{
-		(dynamic left, dynamic right) x = _item.Split(frame);
+		(dynamic left, dynamic right) x = Item.Split(frame);
 		return (new(x.left), new(x.right));
 	}
 
 	public void SetFPS(int fps)
 	{
-		_item.SetFPS(fps);
+		Item.SetFPS(fps);
 	}
 
 	public IAsyncEnumerable<ExoItem> GetExoItemsAsync(ExoOutputDescription outputDescription)
 	{
-		return _item.GetExoItemsAsync(outputDescription);
+		return Item.GetExoItemsAsync(outputDescription);
 	}
 
 	public string ToJson()
 	{
-		return JsonSerializer.Serialize(_item, new JsonSerializerOptions { WriteIndented = true });
+		return JsonSerializer.Serialize(Item, new JsonSerializerOptions { WriteIndented = true });
 	}
 }

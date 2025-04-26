@@ -151,12 +151,11 @@ internal static class Reflect
 	public static void SetImmutableListProp<TWrapper>(
 		object targetObject,
 		string propertyName,
-		IEnumerable<TWrapper> rawItems
+		IEnumerable<TWrapper> wrapperItems
 	)
-		where TWrapper : class
 	{
 		ArgumentNullException.ThrowIfNull(targetObject);
-		rawItems ??= [];
+		wrapperItems ??= [];
 
 		var targetType = targetObject.GetType();
 
@@ -182,30 +181,35 @@ internal static class Reflect
 		var list = Activator.CreateInstance(listType);
 		var addMethod = listType.GetMethod("Add");
 
-		foreach (var item in rawItems)
+		// wrapperItemsからRawItemを抽出するためのプロパティ情報取得
+		var rawItemProp = typeof(TWrapper).GetProperty("RawItem");
+
+		if (rawItemProp is null)
 		{
-			if (item is null) continue;
+			throw new InvalidOperationException(
+				$"型 '{typeof(TWrapper).Name}' には 'RawItem' プロパティがありません。"
+			);
+		}
 
-			var expando = new ExpandoObject() as IDictionary<string, object>;
+		foreach (var wrapperItem in wrapperItems)
+		{
+			if (wrapperItem is null) continue;
 
-			foreach (var prop in typeof(TWrapper).GetProperties(
-				BindingFlags.Public | BindingFlags.Instance))
+			try
 			{
-				try
+				// RawItemを取得
+				var rawItem = rawItemProp.GetValue(wrapperItem);
+
+				if (rawItem != null)
 				{
-					var val = prop.GetValue(item);
-					if (val is null) continue;
-					expando[prop.Name] = val;
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine($"Error setting property '{prop.Name}': {e.Message}");
+					// 直接RawItemを追加（変換なし）
+					addMethod?.Invoke(list, [rawItem]);
 				}
 			}
-
-			// インターフェースに変換して追加
-			var actedItem = expando.ActLike(interfaceType);
-			addMethod?.Invoke(list, [ actedItem ]);
+			catch (Exception e)
+			{
+				Console.WriteLine($"アイテムの追加中にエラーが発生しました: {e.Message}");
+			}
 		}
 
 		var immutableType = typeof(ImmutableList);

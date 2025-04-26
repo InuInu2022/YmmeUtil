@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Epoxy;
 using YmmeUtil.Ymm4;
+using YmmeUtil.Ymm4.Wrap.Items;
 
 namespace YmmeUtil.Sandbox;
 
@@ -98,6 +99,23 @@ public class MainViewModel
 				//timeLine.Items = [];
 				timeLine.Items.ToList()
 					.ForEach(item => Debug.WriteLine($"Timeline Item:\n\t {item}"));
+				var t = new WrapTextItem()
+				{
+					Text = "Test",
+					Length = 100,
+					FontColor = new System.Windows.Media.Color()
+					{
+						A = 255,
+						R = 255,
+						G = 0,
+						B = 0
+					},
+					X = new(100),
+					Y = new(100),
+				};
+
+				//追加
+				timeLine.TryAddItems([t]);
 
 			}
 			catch (System.Exception e)
