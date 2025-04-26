@@ -1,4 +1,7 @@
 using System.Diagnostics;
+
+using Dynamitey;
+
 using YmmeUtil.Ymm4.Wrap;
 using YmmeUtil.Ymm4.Wrap.Items;
 using YukkuriMovieMaker.ViewModels;
@@ -94,7 +97,7 @@ public static class TimelineUtil
 				}
 
 				// メソッドを呼び出す
-				addItemsMethod.Invoke(timeline.RawTimeline, new[] { typedList });
+				Dynamic.InvokeMemberAction(timeline.RawTimeline, "AddItems", typedList);
 				return true;
 			}
 			Debug.WriteLine("AddItemsメソッドが見つかりませんでした。");
