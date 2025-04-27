@@ -10,7 +10,12 @@ namespace TestYmm4;
 
 public class WrapTextItemTest
 {
-    [Fact]
+	public WrapTextItemTest()
+	{
+		YmmAssemblyLoader.LoadYmmAssembly();
+	}
+
+	[Fact]
     public void TextPropsTest()
     {
         // 準備
@@ -75,7 +80,7 @@ public class WrapTextItemTest
         Assert.Equal("変更されたテキスト", textItem.RawItem.Text);
         Assert.Equal("メイリオ", textItem.RawItem.Font);
         Assert.Equal(Colors.Red, textItem.RawItem.FontColor);
-        Assert.Equal(20.0, textItem.RawItem.FontSize.Value);
+        Assert.Equal(32.0, textItem.RawItem.FontSize.Value);
         Assert.True(textItem.RawItem.Bold);
         Assert.True(textItem.RawItem.Italic);
         Assert.True(textItem.RawItem.IsDividedPerCharacter);

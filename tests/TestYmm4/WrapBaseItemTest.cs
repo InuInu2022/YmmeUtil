@@ -18,6 +18,11 @@ public class MockKeyFrames : KeyFrames
 
 public class WrapBaseItemTest
 {
+	public WrapBaseItemTest()
+	{
+		YmmAssemblyLoader.LoadYmmAssembly();
+	}
+
 	[Fact]
 	public void BasicPropsTest()
 	{

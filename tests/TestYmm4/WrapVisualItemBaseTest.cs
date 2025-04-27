@@ -13,8 +13,13 @@ namespace TestYmm4;
 
 public class WrapVisualItemBaseTest
 {
-    // WrapVisualItemBaseのテスト用の派生クラス
-    private record TestVisualItem : WrapVisualItemBase
+	public WrapVisualItemBaseTest()
+	{
+		YmmAssemblyLoader.LoadYmmAssembly();
+	}
+
+	// WrapVisualItemBaseのテスト用の派生クラス
+	private record TestVisualItem : WrapVisualItemBase
     {
         public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.VisualItem";
 
@@ -65,7 +70,7 @@ public class WrapVisualItemBaseTest
         Assert.Equal(300.0, mockItem.X.DefaultValue);
         Assert.Equal(400.0, mockItem.Y.DefaultValue);
         Assert.Equal(50.0, mockItem.Opacity.DefaultValue);
-        Assert.Equal(1, mockItem.Blend); // Blend.Multiply = 1
+        Assert.Equal(Blend.Multiply, mockItem.Blend); // Blend.Multiply = 1
         Assert.True(mockItem.IsInverted);
         Assert.True(mockItem.IsAlwaysOnTop);
     }

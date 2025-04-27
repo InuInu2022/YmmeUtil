@@ -1,14 +1,21 @@
+using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Windows.Media;
 
 using YukkuriMovieMaker.Commons;
-using YukkuriMovieMaker.Project.Items;
 
 namespace TestYmm4;
 
 // モックオブジェクト作成のためのヘルパークラス
 public static class TestItemFactory
 {
+    static TestItemFactory()
+    {
+        // テストクラスが使用される前にYMM4のアセンブリをロード
+        YmmAssemblyLoader.LoadYmmAssembly();
+    }
+
     // モックベースアイテムを作成するヘルパーメソッド
     public static dynamic CreateMockBaseItem()
     {
@@ -30,7 +37,14 @@ public static class TestItemFactory
         expando.HasErrors = false;
 
         // KeyFramesの実際のインスタンスを作成して設定
-        expando.KeyFrames = new MockKeyFrames();
+        // YMM4のアセンブリから直接作成を試みる
+        var keyFrames = YmmAssemblyLoader.CreateYmmInstance("YukkuriMovieMaker.Commons.KeyFrames");
+        expando.KeyFrames = keyFrames ?? new MockKeyFrames();
+
+        // GetFilesメソッドのモック
+        var dict = expando as IDictionary<string, object>;
+        dict!["GetFiles"] = new Func<IEnumerable<string>>(() =>
+            new List<string> { "test1.png", "test2.png" });
 
         return expando;
     }
@@ -55,21 +69,20 @@ public static class TestItemFactory
     // TextItemのモックを作成
     public static dynamic CreateMockTextItem()
     {
-		var expando = new TextItem
-		{
-			// テキスト系プロパティを追加
-			Text = "サンプルテキスト",
-			Font = "游ゴシック",
-			FontColor = Colors.Black,
-			//FontSize = new Animation(20.0, 1.0, 100.0),
-			Bold = false,
-			Italic = false,
-			IsDevidedPerCharacter = false,
-			IsTrimEndSpace = true,
-			Decorations = [], // テキスト装飾リスト
-			DisplayInterval = 0.0
-		};
+        dynamic expando = CreateMockVisualItem();
 
-		return expando;
+        // テキスト系プロパティを追加
+        expando.Text = "サンプルテキスト";
+        expando.Font = "游ゴシック";
+        expando.FontColor = Colors.Black;
+        expando.FontSize = new Animation(20.0, 1.0, 100.0);
+        expando.Bold = false;
+        expando.Italic = false;
+        expando.IsDevidedPerCharacter = false;
+        expando.IsTrimEndSpace = true;
+        expando.Decorations = new List<object>(); // テキスト装飾リスト
+        expando.DisplayInterval = 0.0;
+
+        return expando;
     }
 }
