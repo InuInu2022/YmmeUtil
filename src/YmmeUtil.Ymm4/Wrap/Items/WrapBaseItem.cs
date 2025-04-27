@@ -26,7 +26,7 @@ public partial record WrapBaseItem
 		IWrapBaseItem
 {
 	public dynamic RawItem => Item;
-	public string RawItemTypeName
+	public virtual string RawItemTypeName
 		=> "YukkuriMovieMaker.Project.Items.BaseItem";
 
 	// 以下はYMM4本体側の実装が変わってもいいように
@@ -101,6 +101,7 @@ public partial record WrapBaseItem
 		Item = item;
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0056:Do not call overridable members in constructor", Justification = "<保留中>")]
 	public WrapBaseItem()
 	{
 		var ymmModel = WindowUtil.GetYmmMainWindow();
