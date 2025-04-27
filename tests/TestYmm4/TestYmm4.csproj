@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <NoWarn>$(NoWarn);MSB3277</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- YMM4 -->
+    <Reference Include="$(YMM4_PATH)\YukkuriMovieMaker.dll">
+      <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
+    </Reference>
+    <!-- YMM4 plugins -->
+    <Reference Include="$(YMM4_PATH)\YukkuriMovieMaker.Plugin.dll">
+      <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
+    </Reference>
+    <Reference Include="$(YMM4_PATH)\YukkuriMovieMaker.Controls.dll">
+      <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -5,6 +5,21 @@
 	"version": "0.2.0",
 	"configurations": [
         {
+            "name": "TestYmm4",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net9.0-windows10.0.19041.0/TestYmm4.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "justMyCode": false,
+            "logging": {
+                "moduleLoad": false
+            }
+        },
+        {
             "name": "Debug WithYmm4",
             "type": "coreclr",
             "request": "launch",
