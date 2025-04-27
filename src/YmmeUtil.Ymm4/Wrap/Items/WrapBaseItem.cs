@@ -26,7 +26,7 @@ public partial record WrapBaseItem
 		IWrapBaseItem
 {
 	public dynamic RawItem => Item;
-	public virtual string RawItemTypeName
+	public string RawItemTypeName
 		=> "YukkuriMovieMaker.Project.Items.BaseItem";
 
 	// 以下はYMM4本体側の実装が変わってもいいように
