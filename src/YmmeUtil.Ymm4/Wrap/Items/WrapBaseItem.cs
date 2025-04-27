@@ -104,17 +104,25 @@ public partial record WrapBaseItem
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0056:Do not call overridable members in constructor", Justification = "<保留中>")]
 	public WrapBaseItem()
 	{
-		var ymmModel = WindowUtil.GetYmmMainWindow();
 		Debug.WriteLine($"RawItemTypeName: {RawItemTypeName}");
 		Type? itemType = null;
 		try
 		{
-			itemType = ymmModel.GetType().Assembly.GetType(RawItemTypeName);
+			// 現在ロードされているすべてのアセンブリから型を検索
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				itemType = assembly.GetType(RawItemTypeName);
+				if (itemType is not null)
+				{
+					break;
+				}
+			}
 		}
-		catch (System.Exception)
+		catch (System.Exception ex)
 		{
-			Console.WriteLine($"RawItemTypeName: {RawItemTypeName} not found.");
+			Debug.WriteLine($"RawItemTypeName: {RawItemTypeName} not found. {ex.Message}");
 		}
+
 		itemType ??= typeof(ExpandoObject);
 		var rawItem = Activator.CreateInstance(itemType);
 		Item = rawItem ?? new ExpandoObject();
