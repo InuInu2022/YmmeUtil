@@ -15,7 +15,6 @@ public class ForwardingGeneratorTests
 	{
 		// テスト対象のソースコード
 		const string source = """
-
 			using System;
 
 			namespace TestNamespace
@@ -32,7 +31,7 @@ public class ForwardingGeneratorTests
 			        private readonly InnerClass _internalObject = new InnerClass();
 
 			        [WrapForward]
-			        public int Value { get; }
+			        public int Value { get; set;}
 			    }
 
 			    public class InnerClass
@@ -49,7 +48,7 @@ public class ForwardingGeneratorTests
 			@"public\s+partial\s+class\s+TestClass",
 			@"public\s+int\s+Value",
 			@"get\s+=>\s+_internalObject\.Value",
-			@"set\s+=>\s+_internalObject\.Value\s+=\s+value"
+			@"set\s+=>\s+_internalObject\.Value\s+=\s+value",
 		};
 
 		// テストの実行
@@ -61,7 +60,6 @@ public class ForwardingGeneratorTests
 	{
 		// テスト対象のソースコード
 		const string source = """
-
 			using System;
 
 			namespace TestNamespace
@@ -78,10 +76,10 @@ public class ForwardingGeneratorTests
 			        private readonly InnerClass _internalObject = new InnerClass();
 
 			        [WrapForward]
-			        public int Id { get; }
+			        public int Id { get; set;}
 
 			        [WrapForward]
-			        public string Name { get; }
+			        public string Name { get; set;}
 			    }
 
 			    public class InnerClass
@@ -97,14 +95,14 @@ public class ForwardingGeneratorTests
 		{
 			@"public\s+int\s+Id",
 			@"get\s+=>\s+_internalObject\.Id",
-			@"set\s+=>\s+_internalObject\.Id\s+=\s+value"
+			@"set\s+=>\s+_internalObject\.Id\s+=\s+value",
 		};
 
 		var expectedPatternsName = new[]
 		{
 			@"public\s+string\s+Name",
 			@"get\s+=>\s+_internalObject\.Name",
-			@"set\s+=>\s+_internalObject\.Name\s+=\s+value"
+			@"set\s+=>\s+_internalObject\.Name\s+=\s+value",
 		};
 
 		// テストの実行
@@ -114,6 +112,49 @@ public class ForwardingGeneratorTests
 
 	[Fact]
 	public void CustomFieldNameTest()
+	{
+		// テスト対象のソースコード
+		const string source = """
+			using System;
+
+			namespace TestNamespace
+			{
+				[AttributeUsage(AttributeTargets.Property)]
+				public class WrapForwardAttribute : Attribute
+				{
+					public WrapForwardAttribute() { }
+					public WrapForwardAttribute(string fieldName) { }
+				}
+
+				public partial class TestClass
+				{
+					private readonly InnerClass _customField = new InnerClass();
+
+					[WrapForward("_customField")]
+					public int Value { get; set; }
+				}
+
+				public class InnerClass
+				{
+					public int Value { get; set; }
+				}
+			}
+			""";
+
+		// 期待される生成コードのパターン
+		var expectedPatterns = new[]
+		{
+			@"public\s+int\s+Value",
+			@"get\s+=>\s+_customField\.Value",
+			@"set\s+=>\s+_customField\.Value\s+=\s+value",
+		};
+
+		// テストの実行
+		RunTest(source, expectedPatterns);
+	}
+
+	[Fact]
+	public void GetOnlyPropertyTest()
 	{
 		// テスト対象のソースコード
 		const string source = """
@@ -131,15 +172,15 @@ public class ForwardingGeneratorTests
 
 				public partial class TestClass
 				{
-					private readonly InnerClass _customField = new InnerClass();
+					private readonly InnerClass _internalObject = new InnerClass();
 
-					[WrapForward("_customField")]
-					public int Value { get; }
+					[WrapForward]
+					public int ReadOnlyValue { get; }
 				}
 
 				public class InnerClass
 				{
-					public int Value { get; set; }
+					public int ReadOnlyValue { get; }
 				}
 			}
 			""";
@@ -147,16 +188,145 @@ public class ForwardingGeneratorTests
 		// 期待される生成コードのパターン
 		var expectedPatterns = new[]
 		{
-			@"public\s+int\s+Value",
-			@"get\s+=>\s+_customField\.Value",
-			@"set\s+=>\s+_customField\.Value\s+=\s+value"
+			@"public\s+int\s+ReadOnlyValue",
+			@"get\s+=>\s+_internalObject\.ReadOnlyValue",
+			// setアクセサーが含まれていないことを確認
+		};
+
+		// 生成されないことを期待するパターン
+		var unexpectedPatterns = new[] { @"set\s+=>\s+_internalObject\.ReadOnlyValue\s+=\s+value" };
+
+		// テストの実行
+		RunTest(source, expectedPatterns, unexpectedPatterns);
+	}
+
+	[Fact]
+	public void SetOnlyPropertyTest()
+	{
+		// テスト対象のソースコード
+		const string source = """
+
+			using System;
+
+			namespace TestNamespace
+			{
+				[AttributeUsage(AttributeTargets.Property)]
+				public class WrapForwardAttribute : Attribute
+				{
+					public WrapForwardAttribute() { }
+					public WrapForwardAttribute(string fieldName) { }
+				}
+
+				public partial class TestClass
+				{
+					private readonly InnerClass _internalObject = new InnerClass();
+
+					[WrapForward]
+					public int WriteOnlyValue { set; }
+				}
+
+				public class InnerClass
+				{
+					public int WriteOnlyValue { set; }
+				}
+			}
+			""";
+
+		// 期待される生成コードのパターン
+		var expectedPatterns = new[]
+		{
+			@"public\s+int\s+WriteOnlyValue",
+			@"set\s+=>\s+_internalObject\.WriteOnlyValue\s+=\s+value",
+			// getアクセサーが含まれていないことを確認
+		};
+
+		// 生成されないことを期待するパターン
+		var unexpectedPatterns = new[] { @"get\s+=>\s+_internalObject\.WriteOnlyValue" };
+
+		// テストの実行
+		RunTest(source, expectedPatterns, unexpectedPatterns);
+	}
+
+	[Fact]
+	public void MixedAccessorsPropertyTest()
+	{
+		// テスト対象のソースコード
+		const string source = """
+			using System;
+
+			namespace TestNamespace
+			{
+				[AttributeUsage(AttributeTargets.Property)]
+				public class WrapForwardAttribute : Attribute
+				{
+					public WrapForwardAttribute() { }
+					public WrapForwardAttribute(string fieldName) { }
+				}
+
+				public partial class TestClass
+				{
+					private readonly InnerClass _internalObject = new InnerClass();
+
+					[WrapForward]
+					public int ReadOnlyProperty { get; }
+
+					[WrapForward]
+					public string WriteOnlyProperty { set; }
+
+					[WrapForward]
+					public double NormalProperty { get; set; }
+				}
+
+				public class InnerClass
+				{
+					public int ReadOnlyProperty { get; }
+					public string WriteOnlyProperty { set; }
+					public double NormalProperty { get; set; }
+				}
+			}
+			""";
+
+		// ReadOnlyProperty のテスト
+		var expectedPatternsReadOnly = new[]
+		{
+			@"public\s+int\s+ReadOnlyProperty",
+			@"get\s+=>\s+_internalObject\.ReadOnlyProperty",
+		};
+		var unexpectedPatternsReadOnly = new[]
+		{
+			@"set\s+=>\s+_internalObject\.ReadOnlyProperty\s+=\s+value",
+		};
+
+		// WriteOnlyProperty のテスト
+		var expectedPatternsWriteOnly = new[]
+		{
+			@"public\s+string\s+WriteOnlyProperty",
+			@"set\s+=>\s+_internalObject\.WriteOnlyProperty\s+=\s+value",
+		};
+		var unexpectedPatternsWriteOnly = new[]
+		{
+			@"get\s+=>\s+_internalObject\.WriteOnlyProperty",
+		};
+
+		// NormalProperty のテスト
+		var expectedPatternsNormal = new[]
+		{
+			@"public\s+double\s+NormalProperty",
+			@"get\s+=>\s+_internalObject\.NormalProperty",
+			@"set\s+=>\s+_internalObject\.NormalProperty\s+=\s+value",
 		};
 
 		// テストの実行
-		RunTest(source, expectedPatterns);
+		RunTest(source, expectedPatternsReadOnly, unexpectedPatternsReadOnly);
+		RunTest(source, expectedPatternsWriteOnly, unexpectedPatternsWriteOnly);
+		RunTest(source, expectedPatternsNormal);
 	}
 
-	private static void RunTest(string source, string[] expectedPatterns)
+	private static void RunTest(
+		string source,
+		string[] expectedPatterns,
+		string[]? unexpectedPatterns = null
+	)
 	{
 		// 必要な基本参照を取得
 		var references = new[]
@@ -206,6 +376,19 @@ public class ForwardingGeneratorTests
 				matches,
 				$"Generated code does not match expected pattern: {pattern}\nGenerated code:\n{allContent}"
 			);
+		}
+
+		// 除外するパターンが生成されたコードに含まれていないかを確認
+		if (unexpectedPatterns != null)
+		{
+			foreach (var pattern in unexpectedPatterns)
+			{
+				bool matches = Regex.IsMatch(allContent, pattern, RegexOptions.Singleline);
+				Assert.False(
+					matches,
+					$"Generated code unexpectedly contains pattern: {pattern}\nGenerated code:\n{allContent}"
+				);
+			}
 		}
 	}
 }
