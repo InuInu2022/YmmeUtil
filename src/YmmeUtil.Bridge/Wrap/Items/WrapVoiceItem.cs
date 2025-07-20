@@ -1,4 +1,4 @@
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.VoiceItem
@@ -6,6 +6,7 @@ namespace YmmeUtil.Ymm4.Wrap.Items;
 public record WrapVoiceItem : WrapBaseItem
 {
 	public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.VoiceItem";
-    public WrapVoiceItem(dynamic item)
+
+	public WrapVoiceItem(dynamic item)
 		: base((object)item) { }
 }

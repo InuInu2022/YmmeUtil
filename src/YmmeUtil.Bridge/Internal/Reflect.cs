@@ -1,14 +1,22 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Dynamic;
 using System.Globalization;
 using System.Reflection;
+using Dynamitey;
 using ImpromptuInterface;
 
-namespace YmmeUtil.Ymm4.Internal;
+namespace YmmeUtil.Bridge.Internal;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011")]
 internal static class Reflect
 {
+	// 型情報のキャッシュ用ディクショナリ
+	static readonly ConcurrentDictionary<string, Type> _typeCache = new(StringComparer.Ordinal);
+
+	// 最初に取得したIItem型をキャッシュ
+	static Type? _cachedItemType;
+
 	/// <summary>
 	/// GetProp from ViewModel class
 	/// </summary>
@@ -74,7 +82,11 @@ internal static class Reflect
 	/// <returns>変換されたラッパーコレクション</returns>
 	/// <exception cref="InvalidOperationException">プロパティが見つからないか、ImmutableList型でない場合</exception>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "SMA0040:Missing Using Statement", Justification = "<保留中>")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Usage",
+		"SMA0040:Missing Using Statement",
+		Justification = "<保留中>"
+	)]
 	public static ImmutableList<TWrapper> GetImmutableListProp<TWrapper>(
 		object sourceObject,
 		string propertyName,
@@ -87,16 +99,21 @@ internal static class Reflect
 
 		var sourceType = sourceObject.GetType();
 
-		var propInfo = sourceType.GetProperty(
-			propertyName,
-			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-		) ?? throw new InvalidOperationException(
-			$"プロパティ '{propertyName}' が見つかりません。"
-		);
+		var propInfo =
+			sourceType.GetProperty(
+				propertyName,
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+			)
+			?? throw new InvalidOperationException(
+				$"プロパティ '{propertyName}' が見つかりません。"
+			);
 
 		var propType = propInfo.PropertyType;
 
-		if (!propType.IsGenericType || propType.GetGenericTypeDefinition() != typeof(ImmutableList<>))
+		if (
+			!propType.IsGenericType
+			|| propType.GetGenericTypeDefinition() != typeof(ImmutableList<>)
+		)
 		{
 			throw new InvalidOperationException(
 				$"プロパティ '{propertyName}' は ImmutableList<T> ではありません。"
@@ -145,7 +162,6 @@ internal static class Reflect
 	/// <typeparam name="TWrapper"></typeparam>
 	/// <param name="targetObject"></param>
 	/// <param name="propertyName"></param>
-	/// <param name="rawItems"></param>
 	/// <exception cref="InvalidOperationException"></exception>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0051")]
 	public static void SetImmutableListProp<TWrapper>(
@@ -159,16 +175,21 @@ internal static class Reflect
 
 		var targetType = targetObject.GetType();
 
-		var propInfo = targetType.GetProperty(
-			propertyName,
-			BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-		) ?? throw new InvalidOperationException(
-			$"プロパティ '{propertyName}' が見つかりません。"
-		);
+		var propInfo =
+			targetType.GetProperty(
+				propertyName,
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+			)
+			?? throw new InvalidOperationException(
+				$"プロパティ '{propertyName}' が見つかりません。"
+			);
 
 		var propType = propInfo.PropertyType;
 
-		if (!propType.IsGenericType || propType.GetGenericTypeDefinition() != typeof(ImmutableList<>))
+		if (
+			!propType.IsGenericType
+			|| propType.GetGenericTypeDefinition() != typeof(ImmutableList<>)
+		)
 		{
 			throw new InvalidOperationException(
 				$"プロパティ '{propertyName}' は ImmutableList<T> ではありません。"
@@ -193,7 +214,8 @@ internal static class Reflect
 
 		foreach (var wrapperItem in wrapperItems)
 		{
-			if (wrapperItem is null) continue;
+			if (wrapperItem is null)
+				continue;
 
 			try
 			{
@@ -214,13 +236,17 @@ internal static class Reflect
 
 		var immutableType = typeof(ImmutableList);
 
-		var createRangeMethod = immutableType
-			.GetMethods(BindingFlags.Public | BindingFlags.Static)
-			.FirstOrDefault(m =>
-				string.Equals(m.Name, "CreateRange", StringComparison.Ordinal)
-				&& m.IsGenericMethod
-				&& m.GetParameters().Length == 1)
-				?? throw new InvalidOperationException("ImmutableList.CreateRangeメソッドが見つかりません。");
+		var createRangeMethod =
+			immutableType
+				.GetMethods(BindingFlags.Public | BindingFlags.Static)
+				.FirstOrDefault(m =>
+					string.Equals(m.Name, "CreateRange", StringComparison.Ordinal)
+					&& m.IsGenericMethod
+					&& m.GetParameters().Length == 1
+				)
+			?? throw new InvalidOperationException(
+				"ImmutableList.CreateRangeメソッドが見つかりません。"
+			);
 
 		// ジェネリックメソッドをインスタンス化
 		var genericCreateRange = createRangeMethod.MakeGenericMethod(interfaceType);
@@ -230,5 +256,28 @@ internal static class Reflect
 
 		// プロパティに設定
 		propInfo.SetValue(targetObject, immutableList);
+	}
+
+	static Type GetCachedItemType(dynamic timeline)
+	{
+		// キャッシュがあればそれを返す
+		if (_cachedItemType != null)
+			return _cachedItemType;
+
+		// キャッシュがなければ動的に取得
+		var timelineType = timeline.GetType();
+		var addItemsMethod =
+			timelineType.GetMethod(
+				"AddItems",
+				System.Reflection.BindingFlags.Instance
+					| System.Reflection.BindingFlags.Public
+					| System.Reflection.BindingFlags.NonPublic
+			) ?? throw new InvalidOperationException("AddItemsメソッドが見つかりません");
+		var paramType = addItemsMethod.GetParameters()[0].ParameterType;
+		var elementType = paramType.GetGenericArguments()[0];
+
+		// 型をキャッシュして返す
+		_cachedItemType = elementType;
+		return elementType;
 	}
 }

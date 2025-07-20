@@ -1,20 +1,18 @@
 using System.Collections.Immutable;
-
-using YmmeUtil.Ymm4.Internal;
-
+using YmmeUtil.Bridge.Internal;
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Plugin.Effects;
 using YukkuriMovieMaker.Project;
 
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.VisualItem
 /// </summary>
 public abstract partial record WrapVisualItemBase : WrapBaseItem
 {
-	public override string RawItemTypeName
-		=> "YukkuriMovieMaker.Project.Items.VisualItem";
+	public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.VisualItem";
+
 	protected WrapVisualItemBase(dynamic item)
 		: base((object)item) { }
 
@@ -32,7 +30,11 @@ public abstract partial record WrapVisualItemBase : WrapBaseItem
 	public Animation Zoom { get; set; } = new(100.0, 0.0, 5000.0);
 	public Animation Rotation { get; set; } = new(0.0, -36000.0, 36000.0, 360.0);
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "SMA0020:Unchecked Cast to Enum Type", Justification = "<保留中>")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Usage",
+		"SMA0020:Unchecked Cast to Enum Type",
+		Justification = "<保留中>"
+	)]
 	public Blend Blend
 	{
 		get
@@ -85,18 +87,12 @@ public abstract partial record WrapVisualItemBase : WrapBaseItem
 
 	public ImmutableList<IVideoEffect> VideoEffects
 	{
-		get => Reflect.GetImmutableListProp<IVideoEffect>(
-			Item,
-			nameof(VideoEffects),
-			factory: (Func<dynamic, IVideoEffect>)(f => (IVideoEffect)f)
-		);
-		set
-		{
-			Reflect.SetImmutableListProp<IVideoEffect>(
+		get =>
+			Reflect.GetImmutableListProp<IVideoEffect>(
 				Item,
 				nameof(VideoEffects),
-				value
+				factory: (Func<dynamic, IVideoEffect>)(f => (IVideoEffect)f)
 			);
-		}
+		set { Reflect.SetImmutableListProp<IVideoEffect>(Item, nameof(VideoEffects), value); }
 	}
 }

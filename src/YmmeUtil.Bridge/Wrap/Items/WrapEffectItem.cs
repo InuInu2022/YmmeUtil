@@ -1,4 +1,4 @@
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.EffectItem
@@ -6,6 +6,7 @@ namespace YmmeUtil.Ymm4.Wrap.Items;
 public record WrapEffectItem : WrapVisualItemBase
 {
 	public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.EffectItem";
-    public WrapEffectItem(dynamic item)
+
+	public WrapEffectItem(dynamic item)
 		: base((object)item) { }
 }

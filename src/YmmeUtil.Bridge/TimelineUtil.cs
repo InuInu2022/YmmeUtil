@@ -1,13 +1,12 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-
 using Dynamitey;
-
-using YmmeUtil.Ymm4.Wrap;
-using YmmeUtil.Ymm4.Wrap.Items;
+using YmmeUtil.Bridge.Wrap;
+using YmmeUtil.Bridge.Wrap.Items;
+using YmmeUtil.Ymm4;
 using YukkuriMovieMaker.ViewModels;
 
-namespace YmmeUtil.Ymm4;
+namespace YmmeUtil.Bridge;
 
 public static class TimelineUtil
 {
@@ -61,10 +60,7 @@ public static class TimelineUtil
 	}
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011")]
-	public static bool TryAddItems(
-		this WrapTimeLine timeline,
-		IEnumerable<IWrapBaseItem> items
-	)
+	public static bool TryAddItems(this WrapTimeLine timeline, IEnumerable<IWrapBaseItem> items)
 	{
 		if (timeline is null || items?.Any() is not true)
 		{
@@ -96,6 +92,7 @@ public static class TimelineUtil
 			return false;
 		}
 	}
+
 	// IItem型を取得してキャッシュするメソッド
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011")]
 	static Type GetCachedItemType(dynamic timeline)
@@ -106,13 +103,13 @@ public static class TimelineUtil
 
 		// キャッシュがなければ動的に取得
 		var timelineType = timeline.GetType();
-		var addItemsMethod = timelineType.GetMethod(
-			"AddItems",
-			System.Reflection.BindingFlags.Instance
-				| System.Reflection.BindingFlags.Public
-				| System.Reflection.BindingFlags.NonPublic
-		)
-			?? throw new InvalidOperationException("AddItemsメソッドが見つかりません");
+		var addItemsMethod =
+			timelineType.GetMethod(
+				"AddItems",
+				System.Reflection.BindingFlags.Instance
+					| System.Reflection.BindingFlags.Public
+					| System.Reflection.BindingFlags.NonPublic
+			) ?? throw new InvalidOperationException("AddItemsメソッドが見つかりません");
 		var paramType = addItemsMethod.GetParameters()[0].ParameterType;
 		var elementType = paramType.GetGenericArguments()[0];
 
@@ -138,5 +135,32 @@ public static class TimelineUtil
 				return type;
 			}
 		);
+	}
+
+	/// <summary>
+	/// IEnumerable<IWrapBaseItem> to IEnumerable<IItem>
+	/// </summary>
+	/// <param name="timeline"></param>
+	/// <param name="items"></param>
+	/// <returns></returns>
+	public static IEnumerable<dynamic> ConvertToIItem(
+		this WrapTimeLine timeline,
+		IEnumerable<IWrapBaseItem> items
+	)
+	{
+		// キャッシュされたIItem型を使用するか、新たに取得してキャッシュ
+		Type itemType = GetCachedItemType(timeline.RawTimeline);
+		dynamic itemsList = Dynamic.InvokeConstructor(typeof(List<>).MakeGenericType(itemType));
+
+		// RawItemをリストに追加
+		foreach (var item in items)
+		{
+			if (item?.RawItem != null)
+			{
+				Dynamic.InvokeMemberAction(itemsList, "Add", item.RawItem);
+			}
+		}
+
+		return itemsList;
 	}
 }

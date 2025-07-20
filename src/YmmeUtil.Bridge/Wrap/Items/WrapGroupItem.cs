@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
-using YmmeUtil.Ymm4.Internal;
+using ImpromptuInterface;
+using YmmeUtil.Bridge.Internal;
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Plugin.Effects;
-using ImpromptuInterface;
 
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.GroupItem
@@ -34,9 +34,7 @@ public record WrapGroupItem : WrapVisualItemBase
 
 	public IEnumerable<IVideoEffect> GroupEffects
 	{
-		get => Impromptu
-			.ActLike<IEnumerable<IVideoEffect>>(Item.GroupEffects);
-		set => Item.GroupEffects = value;
+		get => Impromptu.ActLike<IEnumerable<IVideoEffect>>(Item.GroupEffects);
 	}
 
 	public bool IsCompressFrame

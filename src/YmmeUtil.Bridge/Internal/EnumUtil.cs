@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using YukkuriMovieMaker.Project;
 
-namespace YmmeUtil.Ymm4.Internal;
+namespace YmmeUtil.Bridge.Internal;
 
 public static class EnumUtil
 {

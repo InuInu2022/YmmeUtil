@@ -1,4 +1,4 @@
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.TransitionItem
@@ -6,6 +6,7 @@ namespace YmmeUtil.Ymm4.Wrap.Items;
 public record WrapTransitionItem : WrapBaseItem
 {
 	public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.TransitionItem";
-    public WrapTransitionItem(dynamic item)
+
+	public WrapTransitionItem(dynamic item)
 		: base((object)item) { }
 }

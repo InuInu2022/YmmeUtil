@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Text.Json;
 using System.Windows.Media;
-using YmmeUtil.Ymm4.Internal;
+using YmmeUtil.Bridge.Internal;
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Exo;
 using YukkuriMovieMaker.ItemEditor;
 using YukkuriMovieMaker.Project;
 using YukkuriMovieMaker.UndoRedo;
 
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.BaseItem
@@ -26,8 +26,7 @@ public partial record WrapBaseItem
 		IWrapBaseItem
 {
 	public dynamic RawItem => Item;
-	public virtual string RawItemTypeName
-		=> "YukkuriMovieMaker.Project.Items.BaseItem";
+	public virtual string RawItemTypeName => "YukkuriMovieMaker.Project.Items.BaseItem";
 
 	// 以下はYMM4本体側の実装が変わってもいいように
 	// ラップしたプロパティ
@@ -101,7 +100,11 @@ public partial record WrapBaseItem
 		Item = item;
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0056:Do not call overridable members in constructor", Justification = "<保留中>")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Design",
+		"MA0056:Do not call overridable members in constructor",
+		Justification = "<保留中>"
+	)]
 	public WrapBaseItem()
 	{
 		Debug.WriteLine($"RawItemTypeName: {RawItemTypeName}");
@@ -138,7 +141,7 @@ public partial record WrapBaseItem
 	{
 		try
 		{
-			dynamicValue = Internal.Reflect.GetProp(Item, propName);
+			dynamicValue = Reflect.GetProp(Item, propName);
 		}
 		catch (Exception e)
 		{
@@ -159,7 +162,7 @@ public partial record WrapBaseItem
 	{
 		try
 		{
-			dynamicValue = Internal.Reflect.GetField(Item, fieldName);
+			dynamicValue = Reflect.GetField(Item, fieldName);
 		}
 		catch (Exception e)
 		{

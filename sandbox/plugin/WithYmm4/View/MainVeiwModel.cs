@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using Epoxy;
+using YmmeUtil.Bridge;
+using YmmeUtil.Bridge.Wrap.Items;
 using YmmeUtil.Ymm4;
-using YmmeUtil.Ymm4.Wrap.Items;
 
 namespace YmmeUtil.Sandbox;
 
@@ -72,7 +73,7 @@ public class MainViewModel
 		{
 			try
 			{
-				var hasTL = TimelineUtil.TryGetTimeline(out var timeLine);
+				var hasTL = Bridge.TimelineUtil.TryGetTimeline(out var timeLine);
 				Debug.Assert(hasTL, "YMM4のタイムラインが取得できませんでした。");
 				if (!hasTL) return default;
 

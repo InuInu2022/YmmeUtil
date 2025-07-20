@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Media;
-
 using YukkuriMovieMaker.Commons;
 
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.TextItem
@@ -15,6 +15,7 @@ public record WrapTextItem : WrapVisualItemBase
 
 	public WrapTextItem(dynamic item)
 		: base((object)item) { }
+
 	public WrapTextItem()
 		: base()
 	{
@@ -40,7 +41,6 @@ public record WrapTextItem : WrapVisualItemBase
 	public Animation FontSize
 	{
 		get => Item.FontSize;
-		//set => Item.FontSize = value;
 	}
 
 	public bool Bold
@@ -58,6 +58,14 @@ public record WrapTextItem : WrapVisualItemBase
 		//fixed spell
 		get => Item.IsDevidedPerCharacter;
 		set => Item.IsDevidedPerCharacter = value;
+	}
+
+	[Obsolete("Use IsDividedPerCharacter instead.")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public bool IsDevidedPerCharacter
+	{
+		get => IsDividedPerCharacter;
+		set => IsDividedPerCharacter = value;
 	}
 
 	public bool IsTrimEndSpace

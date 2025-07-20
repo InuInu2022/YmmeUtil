@@ -1,13 +1,12 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Media;
-
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Exo;
 using YukkuriMovieMaker.Project;
 using YukkuriMovieMaker.UndoRedo;
 
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 public interface IWrapBaseItem
 {

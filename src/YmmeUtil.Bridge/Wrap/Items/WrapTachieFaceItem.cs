@@ -1,4 +1,4 @@
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.TachieFaceItem
@@ -6,6 +6,7 @@ namespace YmmeUtil.Ymm4.Wrap.Items;
 public record WrapTachieFaceItem : WrapBaseItem
 {
 	public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.TachieFaceItem";
-    public WrapTachieFaceItem(dynamic item)
+
+	public WrapTachieFaceItem(dynamic item)
 		: base((object)item) { }
 }

@@ -1,4 +1,4 @@
-namespace YmmeUtil.Ymm4.Wrap.Items;
+namespace YmmeUtil.Bridge.Wrap.Items;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.Items.FrameBufferItem
@@ -6,6 +6,7 @@ namespace YmmeUtil.Ymm4.Wrap.Items;
 public record WrapFrameBufferItem : WrapVisualItemBase
 {
 	public override string RawItemTypeName => "YukkuriMovieMaker.Project.Items.FrameBufferItem";
-    public WrapFrameBufferItem(dynamic item)
+
+	public WrapFrameBufferItem(dynamic item)
 		: base((object)item) { }
 }

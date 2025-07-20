@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
+using YmmeUtil.Bridge;
 using YmmeUtil.Sandbox.View;
 using YmmeUtil.Ymm4;
 

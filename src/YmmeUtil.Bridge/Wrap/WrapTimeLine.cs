@@ -1,10 +1,11 @@
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using Dynamitey;
+using YmmeUtil.Bridge.Internal;
+using YmmeUtil.Bridge.Wrap.Items;
+using YukkuriMovieMaker.Plugin.Effects;
 
-using YmmeUtil.Ymm4.Internal;
-using YmmeUtil.Ymm4.Wrap.Items;
-
-namespace YmmeUtil.Ymm4.Wrap;
+namespace YmmeUtil.Bridge.Wrap;
 
 /// <summary>
 /// ラッパーオブジェクト YukkuriMovieMaker.Project.TimeLine
@@ -48,11 +49,7 @@ public partial record WrapTimeLine
 				factory: (Func<dynamic, IWrapBaseItem>)(item => ItemFactory.Create(item))
 			);
 		}
-
-		set
-		{
-			Reflect.SetImmutableListProp<IWrapBaseItem>(_timeline, nameof(Items), value);
-		}
+		set { Reflect.SetImmutableListProp<IWrapBaseItem>(_timeline, nameof(Items), value); }
 	}
 
 	public IWrapBaseItem SelectedItem => ItemFactory.Create(_timeline.SelectedItem);
@@ -93,5 +90,22 @@ public partial record WrapTimeLine
 	public WrapTimeLine(dynamic timeline)
 	{
 		_timeline = timeline;
+	}
+
+	public void DeleteItems(IEnumerable<WrapTimeLine> items)
+	{
+		//_timeline.DeleteItems(
+		//	_timeline.ConvertToIItem(items));
+		Dynamic.InvokeMemberAction(_timeline, "DeleteItems", _timeline.ConvertToIItem(items));
+	}
+
+	public void PasteAudioEffects()
+	{
+		_timeline.PasteAudioEffects();
+	}
+
+	public void PasteAudioEffects(IEnumerable<IAudioEffect> effects)
+	{
+		_timeline.PasteAudioEffects(effects);
 	}
 }

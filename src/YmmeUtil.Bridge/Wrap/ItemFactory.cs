@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using YmmeUtil.Ymm4.Wrap.Items;
+using YmmeUtil.Bridge.Wrap.Items;
 
-namespace YmmeUtil.Ymm4.Wrap;
+namespace YmmeUtil.Bridge.Wrap;
 
 /// <summary>
 /// 動的なアイテムオブジェクトから適切なラッパーオブジェクトを生成するファクトリ
