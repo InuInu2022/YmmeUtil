@@ -118,24 +118,6 @@ public static class TimelineUtil
 		return elementType;
 	}
 
-	// 型名から型を取得してキャッシュするメソッド
-	static Type GetOrCreateType(string typeName, dynamic referenceObject)
-	{
-		return _typeCache.GetOrAdd(
-			typeName,
-			name =>
-			{
-				// 参照オブジェクトと同じアセンブリから型を取得
-				var assembly = referenceObject.GetType().Assembly;
-				var type = assembly.GetType(name);
-
-				if (type == null)
-					throw new TypeLoadException($"型 '{name}' が見つかりません");
-
-				return type;
-			}
-		);
-	}
 
 	/// <summary>
 	/// IEnumerable<IWrapBaseItem> to IEnumerable<IItem>
