@@ -98,6 +98,8 @@ public partial record WrapBaseItem
 	public WrapBaseItem(dynamic item)
 	{
 		Item = item;
+		// RawItemのプロパティ変更イベントを購読
+		SubscribeToItemEvents();
 	}
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -129,6 +131,108 @@ public partial record WrapBaseItem
 		itemType ??= typeof(ExpandoObject);
 		var rawItem = Activator.CreateInstance(itemType);
 		Item = rawItem ?? new ExpandoObject();
+
+		// RawItemのプロパティ変更イベントを購読
+		SubscribeToItemEvents();
+	}
+
+	/// <summary>
+	/// RawItemのイベントを購読してプロパティ変更を中継
+	/// </summary>
+	private void SubscribeToItemEvents()
+	{
+		try
+		{
+			// INotifyPropertyChangedを実装している場合
+			if (Item is INotifyPropertyChanged notifyItem)
+			{
+				notifyItem.PropertyChanged += OnRawItemPropertyChanged;
+			}
+
+			// INotifyPropertyChangingを実装している場合
+			if (Item is INotifyPropertyChanging changingItem)
+			{
+				changingItem.PropertyChanging += OnRawItemPropertyChanging;
+			}
+
+			// INotifyDataErrorInfoを実装している場合
+			if (Item is INotifyDataErrorInfo errorItem)
+			{
+				errorItem.ErrorsChanged += OnRawItemErrorsChanged;
+			}
+
+			// IUndoRedoableを実装している場合
+			if (Item is IUndoRedoable undoRedoItem)
+			{
+				undoRedoItem.UndoRedoCommandCreated += OnRawItemUndoRedoCommandCreated;
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Failed to subscribe to item events: {ex.Message}");
+		}
+	}
+
+	/// <summary>
+	/// RawItemのPropertyChangedイベントハンドラ
+	/// </summary>
+	void OnRawItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		PropertyChanged?.Invoke(this, e);
+	}
+
+	/// <summary>
+	/// RawItemのPropertyChangingイベントハンドラ
+	/// </summary>
+	void OnRawItemPropertyChanging(object? sender, PropertyChangingEventArgs e)
+	{
+		PropertyChanging?.Invoke(this, e);
+	}
+
+	/// <summary>
+	/// RawItemのErrorsChangedイベントハンドラ
+	/// </summary>
+	void OnRawItemErrorsChanged(object? sender, DataErrorsChangedEventArgs e)
+	{
+		ErrorsChanged?.Invoke(this, e);
+	}
+
+	/// <summary>
+	/// RawItemのUndoRedoCommandCreatedイベントハンドラ
+	/// </summary>
+	void OnRawItemUndoRedoCommandCreated(object? sender, UndoRedoEventArgs e)
+	{
+		UndoRedoCommandCreated?.Invoke(this, e);
+	}
+
+	public void UnsubscribeFromItemEvents()
+	{
+		try
+		{
+			if (Item is INotifyPropertyChanged notifyItem)
+			{
+				notifyItem.PropertyChanged -= OnRawItemPropertyChanged;
+			}
+
+			if (Item is INotifyPropertyChanging changingItem)
+			{
+				changingItem.PropertyChanging -= OnRawItemPropertyChanging;
+			}
+
+			if (Item is INotifyDataErrorInfo errorItem)
+			{
+				errorItem.ErrorsChanged -= OnRawItemErrorsChanged;
+			}
+
+			if (Item is IUndoRedoable undoRedoItem)
+			{
+				undoRedoItem.UndoRedoCommandCreated -= OnRawItemUndoRedoCommandCreated;
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Failed to unsubscribe from item events: {ex.Message}");
+		}
 	}
 
 	/// <summary>
