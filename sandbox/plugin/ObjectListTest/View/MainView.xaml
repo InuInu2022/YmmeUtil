@@ -1,0 +1,176 @@
+<UserControl
+  x:Class="YmmeUtil.Sandbox.ObjectListTest.View.MainView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:epoxy="https://github.com/kekyo/Epoxy"
+  xmlns:local="clr-namespace:YmmeUtil.Sandbox.ObjectListTest.View"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  d:DesignHeight="450"
+  d:DesignWidth="800"
+  mc:Ignorable="d"
+  >
+  <epoxy:EventBinder.Events>
+    <epoxy:Event Command="{Binding Ready}" EventName="Loaded" />
+  </epoxy:EventBinder.Events>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <!--  Reloadボタン  -->
+      <RowDefinition Height="Auto" />
+      <!--  検索テキストボックス  -->
+      <RowDefinition Height="*" />
+      <!--  DataGrid: 残り全部を占有  -->
+    </Grid.RowDefinitions>
+
+    <Button
+      Grid.Row="0"
+      Margin="5,5,5,0"
+      Command="{Binding ReloadCommand}"
+      Content="Reload"
+      />
+
+    <!--  検索テキストボックス  -->
+    <TextBox
+      Grid.Row="1"
+      Margin="5,5,5,5"
+      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+      >
+      <TextBox.Style>
+        <Style TargetType="TextBox">
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="TextBox">
+                <Border
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  >
+                  <Grid>
+                    <ScrollViewer x:Name="PART_ContentHost" />
+                    <TextBlock
+                      Margin="5,0,0,0"
+                      VerticalAlignment="Center"
+                      Foreground="Gray"
+                      IsHitTestVisible="False"
+                      Text="タイトルで検索..."
+                      >
+                      <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="Visibility" Value="Collapsed" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Value="">
+                              <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </TextBlock.Style>
+                    </TextBlock>
+                  </Grid>
+                </Border>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </TextBox.Style>
+    </TextBox>
+
+    <!--  DataGrid  -->
+    <DataGrid
+      x:Name="CustomerDataGrid"
+      Grid.Row="2"
+      Margin="0,5,0,0"
+      AutoGenerateColumns="False"
+      CanUserAddRows="False"
+      CanUserDeleteRows="True"
+      CanUserReorderColumns="True"
+      HeadersVisibility="Column"
+      ItemsSource="{Binding FilteredItems}"
+      SelectionMode="Single"
+      >
+      <DataGrid.Columns>
+
+        <DataGridTemplateColumn>
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Rectangle
+                Width="10"
+                Height="20"
+                VerticalAlignment="Center"
+                Fill="{Binding ColorBrush}"
+                />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTextColumn
+          Width="SizeToCells"
+          Binding="{Binding Category}"
+          CanUserSort="True"
+          Header="カテゴリ"
+          SortDirection="Ascending"
+          />
+        <DataGridTextColumn
+          Width="*"
+          Binding="{Binding Label}"
+          CanUserSort="True"
+          Header="名前"
+          SortDirection="Ascending"
+          />
+        <DataGridTextColumn
+          Width="SizeToHeader"
+          Binding="{Binding Layer}"
+          CanUserSort="True"
+          Header="レイヤー"
+          SortDirection="Ascending"
+          SortMemberPath="Layer"
+          />
+        <DataGridTextColumn
+          Width="SizeToHeader"
+          Binding="{Binding Group}"
+          CanUserSort="True"
+          Header="グループ"
+          SortDirection="Ascending"
+          SortMemberPath="Group"
+          />
+        <DataGridTemplateColumn
+          Width="SizeToCells"
+          CanUserSort="True"
+          Header="🔒"
+          SortMemberPath="IsLocked"
+          >
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <ToggleButton
+                Margin="5,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="🔒"
+                IsChecked="{Binding IsLocked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn
+          Width="SizeToCells"
+          CanUserSort="True"
+          Header="👁️"
+          SortMemberPath="IsHidden"
+          >
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <ToggleButton
+                Margin="5,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="👁️"
+                IsChecked="{Binding IsHidden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+
+</UserControl>

@@ -37,5 +37,23 @@
 			},
 			"problemMatcher": "$msCompile"
 		},
+        {
+            "label": "build_sandboxobjectlisttest",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                "${workspaceFolder}/sandbox/plugin/ObjectListTest/ObjectListTest.csproj",
+                // Ask dotnet build to generate full paths for file names.
+                "/property:GenerateFullPaths=true",
+                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
 	]
 }

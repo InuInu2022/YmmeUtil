@@ -48,6 +48,21 @@
             "logging": {
                 "moduleLoad": false
             }
+        },
+        {
+            "name": "Debug ObjectListTest",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_sandboxobjectlisttest",
+            "program": "${env:YMM4_PATH}/YukkuriMovieMaker.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "justMyCode": false,
+            "logging": {
+                "moduleLoad": false
+            }
         }
     ]
 }

@@ -13,6 +13,7 @@
   </Folder>
   <Folder Name="/sandbox/">
     <Project Path="sandbox/plugin/Common/Common.csproj" />
+    <Project Path="sandbox/plugin/ObjectListTest/ObjectListTest.csproj" />
     <Project Path="sandbox/plugin/WithYmm4/WithYmm4.csproj" />
   </Folder>
   <Folder Name="/tests/">
