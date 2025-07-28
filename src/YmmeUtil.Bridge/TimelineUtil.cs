@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Dynamitey;
 using YmmeUtil.Bridge.Wrap;
 using YmmeUtil.Bridge.Wrap.Items;
+using YmmeUtil.Bridge.Wrap.ViewModels;
 using YmmeUtil.Ymm4;
 using YukkuriMovieMaker.ViewModels;
 
@@ -47,6 +48,46 @@ public static class TimelineUtil
 		if (tl is null)
 			return false;
 		timeLine = new WrapTimeLine(tl);
+		return true;
+	}
+
+	public static bool TryGetItemViewModels(
+		out IEnumerable<WrapTimelineItemViewModel>? itemViewModels
+	)
+	{
+		itemViewModels = [];
+		var mainWinVM = GetMainViewModel();
+		if (mainWinVM is null)
+		{
+			return false;
+		}
+
+		var timelineAreaVM = Internal.Reflect.GetProp(mainWinVM, "TimelineAreaViewModel");
+		if (timelineAreaVM is null)
+		{
+			return false;
+		}
+
+		var vm = Internal.Reflect.GetProp(timelineAreaVM, "ViewModel");
+		if (vm is null)
+			return false;
+		var vmValue = Internal.Reflect.GetProp(vm, "Value");
+		if (vmValue is null)
+			return false;
+
+		var items = Internal.Reflect.GetProp(vmValue, "Items");
+		if (items is null)
+			return false;
+
+		if (items is not IEnumerable<dynamic> eItems)
+		{
+			return false;
+		}
+
+		itemViewModels = eItems
+			.Select(item => new WrapTimelineItemViewModel(item))
+			.Where(item => item is not null)
+			.OfType<WrapTimelineItemViewModel>();
 		return true;
 	}
 

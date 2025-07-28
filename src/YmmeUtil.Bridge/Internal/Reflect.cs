@@ -45,6 +45,18 @@ internal static class Reflect
 		return (T)GetProp(vm, propName, isPrivate);
 	}
 
+	internal static void SetProp<T>(dynamic vm, string propName, T val, bool isPrivate = false)
+	{
+		Type vmType = vm.GetType();
+		var propertyInfo = vmType.GetProperty(
+			propName,
+			bindingAttr: isPrivate
+				? BindingFlags.NonPublic | BindingFlags.Instance
+				: BindingFlags.Public | BindingFlags.Instance
+		);
+		propertyInfo?.SetValue(vm, val);
+	}
+
 	/// <summary>
 	/// GetField from ViewModel class
 	/// </summary>
@@ -219,12 +231,21 @@ internal static class Reflect
 
 			try
 			{
+				/*
 				// RawItemを取得
 				var rawItem = rawItemProp.GetValue(wrapperItem);
 
 				if (rawItem != null)
 				{
 					// 直接RawItemを追加（変換なし）
+					addMethod?.Invoke(list, [rawItem]);
+				}*/
+				// dynamicを使用してRawItemを取得
+				dynamic dynamicWrapper = wrapperItem;
+				var rawItem = dynamicWrapper.RawItem;
+
+				if (rawItem is not null && interfaceType.IsAssignableFrom(rawItem.GetType()))
+				{
 					addMethod?.Invoke(list, [rawItem]);
 				}
 			}

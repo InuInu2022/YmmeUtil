@@ -3,7 +3,6 @@
     <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
   <ItemGroup>
     <!-- exclude -->
     <ExcludeFromPublish Include="**\*.pdb" />
@@ -17,12 +16,18 @@
       <Private>false</Private>
       <CopyLocal>false</CopyLocal>
     </Reference>
+    <Reference Include="$(YMM4_PATH)\ReactiveProperty.dll">
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="$(YMM4_PATH)\ReactiveProperty.Core.dll">
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="ImpromptuInterface" Version="8.0.6" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj" />
   </ItemGroup>

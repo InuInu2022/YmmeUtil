@@ -52,7 +52,11 @@ public partial record WrapTimeLine
 		set { Reflect.SetImmutableListProp<IWrapBaseItem>(_timeline, nameof(Items), value); }
 	}
 
-	public IWrapBaseItem SelectedItem => ItemFactory.Create(_timeline.SelectedItem);
+	public IWrapBaseItem SelectedItem
+	{
+		get { return ItemFactory.Create(_timeline.SelectedItem); }
+		set { _timeline.SelectedItem = value; }
+	}
 
 	public IEnumerable<IWrapBaseItem> SelectedItems
 	{
@@ -63,6 +67,10 @@ public partial record WrapTimeLine
 				nameof(SelectedItems),
 				factory: (Func<dynamic, IWrapBaseItem>)(item => ItemFactory.Create(item))
 			);
+		}
+		set
+		{
+			Reflect.SetImmutableListProp<IWrapBaseItem>(_timeline, nameof(SelectedItems), value);
 		}
 	}
 
@@ -92,10 +100,19 @@ public partial record WrapTimeLine
 		_timeline = timeline;
 	}
 
+	public void SelectItems(IEnumerable<IWrapBaseItem> items)
+	{
+		var rawItems = items
+			.Select(i => i.RawItem)
+			.Where(item => item is not null)
+			.Select(item => item is WrapBaseItem wrapItem ? wrapItem.RawItem : item)
+			.OfType<dynamic>()
+			.ToArray();
+		Dynamic.InvokeMemberAction(_timeline, "SelectItems", rawItems);
+	}
+
 	public void DeleteItems(IEnumerable<WrapTimeLine> items)
 	{
-		//_timeline.DeleteItems(
-		//	_timeline.ConvertToIItem(items));
 		Dynamic.InvokeMemberAction(_timeline, "DeleteItems", _timeline.ConvertToIItem(items));
 	}
 
