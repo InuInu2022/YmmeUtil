@@ -1,12 +1,17 @@
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
 using Epoxy;
 using YmmeUtil.Bridge;
 using YmmeUtil.Bridge.Wrap;
+using YmmeUtil.Bridge.Wrap.Items;
+using YmmeUtil.Bridge.Wrap.ViewModels;
 using YmmeUtil.Ymm4;
 
 namespace YmmeUtil.Sandbox.ObjectListTest.View;
@@ -16,6 +21,7 @@ public class MainViewModel
 {
 	public Command? Ready { get; set; }
 	public Command? ReloadCommand { get; set; }
+	public Command? SelectionChangedCommand { get; set; }
 
 	public string SearchText { get; set; } = string.Empty;
 
@@ -42,8 +48,62 @@ public class MainViewModel
 				UpdateItems(timeLine);
 			}
 
+			List<dynamic> windows = [.. Application.Current.Windows];
+			var win = windows.OfType<Window>().Where(w => w.DataContext is MainViewModel).First();
+			if (win is not null)
+				win.Title = "YMM オブジェクトリスト（テスト）";
+
 			return default;
 		});
+
+		ReloadCommand = Command.Factory.Create(() =>
+		{
+			if (TimelineUtil.TryGetTimeline(out var timeLine) && timeLine is not null)
+			{
+				UpdateItems(timeLine);
+			}
+
+			return default;
+		});
+
+		SelectionChangedCommand = Command.Factory.Create<SelectionChangedEventArgs>(
+			(e) =>
+			{
+				if (!TimelineUtil.TryGetTimeline(out var timeLine) || timeLine is null)
+				{
+					return default;
+				}
+
+				var items = e.AddedItems;
+				if (items is null)
+					return default;
+
+				var wItems = items
+					.OfType<ObjectListItem>()
+					.Select(item => item.ConvertToItemViewModel())
+					.Where(item => item is not null)
+					.OfType<WrapTimelineItemViewModel>()
+					.ToList();
+
+				foreach (var item in wItems)
+				{
+					try
+					{
+						var cmd = item.SelectCommand;
+						if (cmd?.CanExecute(null) == true)
+						{
+							cmd.Execute(null);
+						}
+					}
+					catch (System.Exception ex)
+					{
+						Debug.WriteLine($"Failed to select item: {item}, {ex.Message}");
+					}
+				}
+
+				return default;
+			}
+		);
 	}
 
 	void FilterItems()
@@ -83,10 +143,16 @@ public class MainViewModel
 
 	void UpdateItems(WrapTimeLine timeLine)
 	{
+		if (!TimelineUtil.TryGetItemViewModels(out var itemViewModels) || itemViewModels is null)
+		{
+			return;
+		}
+		// アイテムビューのモデルが取得できた場合は、アイテムを更新する
 		Items = new ObservableCollection<ObjectListItem>(
-			timeLine.Items.Select(item => new ObjectListItem(ItemFactory.Create(item)))
+			itemViewModels.Select(item => new ObjectListItem(item))
 		);
 		OnItemsChanged();
+		return;
 	}
 
 	[PropertyChanged(nameof(SearchText))]

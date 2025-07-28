@@ -1,20 +1,59 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="ILRepack" AfterTargets="Build">
+  <Target Name="ILRepacker" AfterTargets="Build" >
 
     <ItemGroup>
-      <InputAssemblies Include="$(OutputPath)\$(AssemblyName).dll" />
-      <InputAssemblies Include="$(OutputPath)\YmmeUtil.Ymm4.dll" />
       <InputAssemblies Include="$(OutputPath)\YmmeUtil.Bridge.dll" />
+      <InputAssemblies Include="$(OutputPath)\YmmeUtil.Ymm4.dll" />
+      <InputAssemblies Include="$(OutputPath)\$(AssemblyName).dll" />
     </ItemGroup>
 
+    <ItemGroup>
+      <DoNotInternalizeAssemblies Include="System" />
+      <DoNotInternalizeAssemblies Include="YukkuriMovieMaker" />
+      <DoNotInternalizeAssemblies Include="YukkuriMovieMaker.Plugin" />
+      <DoNotInternalizeAssemblies Include="YukkuriMovieMaker.Controls" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <LibraryPath Include="$(YMM4_PATH)" />
+      <LibraryPath Include="$(OutputPath)" />
+    </ItemGroup>
+
+    <!-- マージ前のファイルサイズを記録 -->
+    <Message Text="Before ILRepack:" Importance="high" />
+    <ItemGroup>
+      <FilesToCheck Include="$(OutputPath)\$(AssemblyName).dll" />
+      <FilesToCheck Include="$(OutputPath)\YmmeUtil.Bridge.dll" />
+      <FilesToCheck Include="$(OutputPath)\YmmeUtil.Ymm4.dll" />
+    </ItemGroup>
+    <Message Text="File: %(FilesToCheck.Identity) - Size: %(FilesToCheck.Length)" Importance="high" />
+
     <ILRepack
-      Parallel="true"
+      Parallel="false"
       Internalize="true"
       InternalizeExclude="@(DoNotInternalizeAssemblies)"
       InputAssemblies="@(InputAssemblies)"
+      LibraryPath="@(LibraryPath)"
       TargetKind="Dll"
       OutputFile="$(OutputPath)\$(AssemblyName).dll"
+      Union="false"
+      XmlDocumentation="false"
+      LogFile="$(OutputPath)\ILRepack.log"
+      DebugInfo="true"
+      AllowDuplicateResources="true"
+      Verbose="true"
       />
+
+    <!-- マージ後のファイルサイズを確認 -->
+    <Message Text="After ILRepack:" Importance="high" />
+    <ItemGroup>
+      <MergedFile Include="$(OutputPath)\$(AssemblyName).dll" />
+    </ItemGroup>
+    <Message Text="Merged file: %(MergedFile.Identity) - Size: %(MergedFile.Length)" Importance="high" />
+
+    <!-- 元のDLLを.origにリネーム（削除ではなく） -->
+    <Move SourceFiles="$(OutputPath)\YmmeUtil.Bridge.dll" DestinationFiles="$(OutputPath)\YmmeUtil.Bridge.dll.orig" />
+    <Move SourceFiles="$(OutputPath)\YmmeUtil.Ymm4.dll" DestinationFiles="$(OutputPath)\YmmeUtil.Ymm4.dll.orig" />
 
   </Target>
 </Project>

@@ -3,7 +3,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using Epoxy;
+
 using YmmeUtil.Bridge.Wrap.Items;
+using YmmeUtil.Bridge.Wrap.ViewModels;
+using YukkuriMovieMaker.Resources.Localization;
 
 namespace YmmeUtil.Sandbox.ObjectListTest.View;
 
@@ -11,10 +14,12 @@ namespace YmmeUtil.Sandbox.ObjectListTest.View;
 public class ObjectListItem : INotifyPropertyChanged
 {
 	private readonly IWrapBaseItem _item;
+	readonly WrapTimelineItemViewModel _itemVm;
 
-	public ObjectListItem(IWrapBaseItem item)
+	public ObjectListItem(WrapTimelineItemViewModel itemVm)
 	{
-		_item = item;
+		_itemVm = itemVm;
+		_item = itemVm.Item;
 		// アイテムの変更を監視
 		if (_item is INotifyPropertyChanged notifyItem)
 		{
@@ -27,24 +32,31 @@ public class ObjectListItem : INotifyPropertyChanged
 	public int Layer => _item.Layer;
 	public Brush ColorBrush => new SolidColorBrush(_item.ItemColor);
 
-	public string Category =>
-		_item.RawItem.GetType().Name switch
+	public string Category
+	{
+		get
 		{
-			"WrapVideoItem" => "Video",
-			"WrapAudioItem" => "Audio",
-			"WrapImageItem" => "画像",
-			"WrapTextItem" => "Text",
-			"WrapFrameBufferItem" => "画面の複製",
-			"WrapEffectItem" => "エフェクト",
-			"WrapSceneItem" => "シーン",
-			"WrapTransitionItem" => "トランジション",
-			"WrapTachieItem" => "立ち絵",
-			"WrapTachieFaceItem" => "表情",
-			"WrapShapeItem" => "図形",
-			"WrapVoiceItem" => "音声",
-			"WrapGroupItem" => "グループ",
-			_ => "Other",
-		};
+			Debug.WriteLine($"Category: {_item.RawItem.GetType().Name}");
+			return _item.RawItem.GetType().Name switch
+			{
+				"VideoItem" => Texts.VideoItemName,
+				"AudioItem" => Texts.AudioItemName,
+				"ImageItem" => Texts.ImageItemName,
+				"TextItem" => Texts.TextItemName,
+				"FrameBufferItem" => Texts.FrameBufferItemName,
+				"EffectItem" => Texts.EffectItemName,
+				"SceneItem" => Texts.SceneGroupName,
+				"TransitionItem" => Texts.TransitionItemName,
+				"TachieItem" => Texts.TachieItemName,
+				"TachieFaceItem" => Texts.TachieFaceItemName,
+				"ShapeItem" => Texts.ShapeItemName,
+				"VoiceItem" => Texts.VoiceItemName,
+				"GroupItem" => Texts.GroupItemName,
+				_ => Texts.EditorOtherGroupName,
+			};
+		}
+	}
+
 	public bool IsLocked
 	{
 		get => _item.IsLocked;
@@ -91,4 +103,8 @@ public class ObjectListItem : INotifyPropertyChanged
 	{
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
+
+	public IWrapBaseItem ConvertToWrapItem() => _item;
+
+	public WrapTimelineItemViewModel ConvertToItemViewModel() => _itemVm;
 }
