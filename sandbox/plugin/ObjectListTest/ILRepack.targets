@@ -1,10 +1,20 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="ILRepacker" AfterTargets="Build" >
+  <Target Name="ILRepacker" AfterTargets="Build;AfterRebuild" BeforeTargets="PostBuildEvent"
+    Condition="'$(ILRepackExecuted)' != 'true' And Exists('$(OutputPath)\YmmeUtil.Bridge.dll')" >
+
+    <!-- 実行フラグを設定 -->
+    <PropertyGroup>
+      <ILRepackExecuted>true</ILRepackExecuted>
+    </PropertyGroup>
+
+    <!-- 元のファイルをバックアップ -->
+    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFiles="$(OutputPath)\$(AssemblyName).dll.orig" />
 
     <ItemGroup>
+      <!-- プライマリアセンブリを最初に配置 -->
+      <InputAssemblies Include="$(OutputPath)\$(AssemblyName).dll" />
       <InputAssemblies Include="$(OutputPath)\YmmeUtil.Bridge.dll" />
       <InputAssemblies Include="$(OutputPath)\YmmeUtil.Ymm4.dll" />
-      <InputAssemblies Include="$(OutputPath)\$(AssemblyName).dll" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,41 +29,33 @@
       <LibraryPath Include="$(OutputPath)" />
     </ItemGroup>
 
-    <!-- マージ前のファイルサイズを記録 -->
-    <Message Text="Before ILRepack:" Importance="high" />
-    <ItemGroup>
-      <FilesToCheck Include="$(OutputPath)\$(AssemblyName).dll" />
-      <FilesToCheck Include="$(OutputPath)\YmmeUtil.Bridge.dll" />
-      <FilesToCheck Include="$(OutputPath)\YmmeUtil.Ymm4.dll" />
-    </ItemGroup>
-    <Message Text="File: %(FilesToCheck.Identity) - Size: %(FilesToCheck.Length)" Importance="high" />
-
+    <!-- 一時的な出力ファイルを使用 -->
     <ILRepack
-      Parallel="false"
-      Internalize="true"
+      Parallel="true"
+      Internalize="false"
       InternalizeExclude="@(DoNotInternalizeAssemblies)"
       InputAssemblies="@(InputAssemblies)"
       LibraryPath="@(LibraryPath)"
       TargetKind="Dll"
       OutputFile="$(OutputPath)\$(AssemblyName).dll"
-      Union="false"
+      Union="true"
       XmlDocumentation="false"
       LogFile="$(OutputPath)\ILRepack.log"
       DebugInfo="true"
       AllowDuplicateResources="true"
-      Verbose="true"
       />
 
-    <!-- マージ後のファイルサイズを確認 -->
-    <Message Text="After ILRepack:" Importance="high" />
-    <ItemGroup>
-      <MergedFile Include="$(OutputPath)\$(AssemblyName).dll" />
-    </ItemGroup>
-    <Message Text="Merged file: %(MergedFile.Identity) - Size: %(MergedFile.Length)" Importance="high" />
+    <!-- マージされたDLLファイルを削除 -->
+    <Delete Files="$(OutputPath)\YmmeUtil.Bridge.dll" ContinueOnError="true" />
+    <Delete Files="$(OutputPath)\YmmeUtil.Ymm4.dll" ContinueOnError="true" />
 
-    <!-- 元のDLLを.origにリネーム（削除ではなく） -->
-    <Move SourceFiles="$(OutputPath)\YmmeUtil.Bridge.dll" DestinationFiles="$(OutputPath)\YmmeUtil.Bridge.dll.orig" />
-    <Move SourceFiles="$(OutputPath)\YmmeUtil.Ymm4.dll" DestinationFiles="$(OutputPath)\YmmeUtil.Ymm4.dll.orig" />
+    <!-- マージが成功したかを確認 -->
+    <Message Text="ILRepack completed. Merged assemblies removed." Importance="high" />
 
   </Target>
+
+  <!-- 重複実行を防ぐためのプロパティ設定 -->
+  <PropertyGroup>
+    <ILRepackExecuted Condition="'$(ILRepackExecuted)' == ''">false</ILRepackExecuted>
+  </PropertyGroup>
 </Project>

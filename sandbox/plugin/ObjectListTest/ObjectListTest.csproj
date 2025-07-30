@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyName>ObjectListTest</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Epoxy.Wpf" Version="1.16.0" />
@@ -20,7 +22,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj">
+      <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\YmmeUtil.Bridge\YmmeUtil.Bridge.csproj" />
+    <ProjectReference Include="..\..\..\src\YmmeUtil.Bridge\YmmeUtil.Bridge.csproj">
+      <Private>true</Private>
+      <CopyLocal>true</CopyLocal>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -3,9 +3,10 @@ using System.Reflection;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
+
 using YmmeUtil.Bridge;
 using YmmeUtil.Sandbox.ObjectListTest.View;
-using YmmeUtil.Ymm4;
+
 using YukkuriMovieMaker.Plugin;
 
 namespace YmmeUtil.Sandbox.ObjectListTest;
@@ -24,6 +25,7 @@ public class ObjectListTest : IToolPlugin
 
 	public ObjectListTest()
 	{
+
 		var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
 
 		void TickEvent(object? s, EventArgs e)
