@@ -206,7 +206,8 @@
     </DataGrid>
 
     <!--  Footer  -->
-    <DockPanel Grid.Row="2">
+    <DockPanel Grid.Row="2"
+      Visibility="Collapsed">
       <WrapPanel DockPanel.Dock="Right"
         HorizontalAlignment="Right"
         Margin="5,0,5,0"
