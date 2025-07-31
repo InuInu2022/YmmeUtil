@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
+
 using Epoxy;
 using YmmeUtil.Bridge;
 using YmmeUtil.Bridge.Wrap;
@@ -33,25 +35,31 @@ public class MainViewModel
 	{
 		Ready = Command.Factory.Create(() =>
 		{
-			var hasTL = TimelineUtil.TryGetTimeline(out var timeLine);
-
-			if (!hasTL || timeLine is null)
-				return default;
-
-			var raw = timeLine.RawTimeline;
-
-			if (raw is INotifyPropertyChanged target)
-			{
-				//監視する
-				target.PropertyChanged += OnTimelineChanged;
-				// ここでタイムラインの変更を反映させる
-				UpdateItems(timeLine);
-			}
-
+			//set Title
 			List<dynamic> windows = [.. Application.Current.Windows];
-			var win = windows.OfType<Window>().Where(w => w.DataContext is MainViewModel).First();
+			var win = windows.OfType<Window>().FirstOrDefault(w => w.DataContext is MainViewModel);
 			if (win is not null)
 				win.Title = "YMM オブジェクトリスト（テスト）";
+
+
+			// App loaded event
+			var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+			void TickEvent(object? s, EventArgs e)
+			{
+				foreach (Window win in Application.Current.Windows)
+				{
+					// スプラッシュではなく、実ウィンドウかを判定
+					if (IsRealUiWindow(win) && win.IsLoaded)
+					{
+						timer.Stop();
+						OnHostUiReady(win);
+						timer.Tick -= TickEvent;
+						return;
+					}
+				}
+			}
+			timer.Tick += TickEvent;
+			timer.Start();
 
 			return default;
 		});
@@ -104,6 +112,29 @@ public class MainViewModel
 				return default;
 			}
 		);
+	}
+
+	static bool IsRealUiWindow(Window window)
+	{
+		return !string.IsNullOrWhiteSpace(window.Title) && window.Title != "Splash";
+	}
+
+	void OnHostUiReady(Window mainWindow)
+	{
+		var hasTL = TimelineUtil.TryGetTimeline(out var timeLine);
+
+		if (!hasTL || timeLine is null)
+			return;
+
+		var raw = timeLine.RawTimeline;
+
+		if (raw is INotifyPropertyChanged target)
+		{
+			//監視する
+			target.PropertyChanged += OnTimelineChanged;
+			// ここでタイムラインの変更を反映させる
+			UpdateItems(timeLine);
+		}
 	}
 
 	void FilterItems()
