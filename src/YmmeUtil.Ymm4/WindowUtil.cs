@@ -18,13 +18,23 @@ public static class WindowUtil
 	}
 
 	/// <summary>
-	/// YMM4のメインウィンドウを取得します
+	/// YMM4のメインウィンドウを一つ、取得します
+	/// </summary>
+	/// <returns>取得できない場合はnullが返ります</returns>
+	/// <seealso cref="GetYmmMainWindows"/>
+	public static Window? GetYmmMainWindow()
+	{
+		return GetYmmMainWindows().FirstOrDefault(w => w.IsVisible);
+	}
+
+	/// <summary>
+	/// YMM4のメインウィンドウをすべて取得します
 	/// </summary>
 	/// <returns></returns>
-	public static Window GetYmmMainWindow()
+	public static IEnumerable<Window> GetYmmMainWindows()
 	{
 		return GetWindows()
-			.First(w =>
+			.Where(w =>
 				string.Equals(
 					w.GetType().FullName,
 					"YukkuriMovieMaker.Views.MainView",
@@ -33,6 +43,11 @@ public static class WindowUtil
 			);
 	}
 
+	/// <summary>
+	/// ツールウィンドウを取得します
+	/// </summary>
+	/// <param name="windowName">ウィンドウ名に含まれる文字列</param>
+	/// <returns></returns>
 	public static Window? GetToolWindow(string windowName)
 	{
 		return GetWindows()
