@@ -10,6 +10,11 @@ namespace YmmeUtil.Bridge.Wrap.Items;
 
 public interface IWrapBaseItem
 {
+	/// <summary>
+	/// アイテムの動的オブジェクト。
+	/// <para>YMM4本体の実装に依存するため、基本的には直接使用しないでください。</para>
+	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	dynamic RawItem { get; }
 	string RawItemTypeName { get; }
 	bool HasErrors { get; }

@@ -25,6 +25,7 @@ public partial record WrapBaseItem
 		IFileItem,
 		IWrapBaseItem
 {
+	/// <inheritdoc/>
 	public dynamic RawItem => Item;
 	public virtual string RawItemTypeName => "YukkuriMovieMaker.Project.Items.BaseItem";
 

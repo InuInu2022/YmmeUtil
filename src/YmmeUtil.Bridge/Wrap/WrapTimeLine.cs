@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Dynamitey;
 using YmmeUtil.Bridge.Internal;
@@ -16,6 +17,7 @@ public partial record WrapTimeLine
 	/// タイムラインの動的オブジェクト。
 	/// <para>YMM4本体の実装に依存するため、基本的には直接使用しないでください。</para>
 	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public dynamic RawTimeline => _timeline;
 
 	// 以下はYMM4本体側の実装が変わってもいいように
