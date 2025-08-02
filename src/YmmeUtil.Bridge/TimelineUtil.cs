@@ -25,24 +25,12 @@ public static class TimelineUtil
 	public static bool TryGetTimeline(out WrapTimeLine? timeLine)
 	{
 		timeLine = default;
-		var mainWinVM = GetMainViewModel();
-		if (mainWinVM is null)
+
+		var hasVmValue = TryGetTimelineVmValue(out dynamic? vmValue);
+		if (!hasVmValue)
 		{
 			return false;
 		}
-
-		var timelineAreaVM = Internal.Reflect.GetProp(mainWinVM, "TimelineAreaViewModel");
-		if (timelineAreaVM is null)
-		{
-			return false;
-		}
-
-		var vm = Internal.Reflect.GetProp(timelineAreaVM, "ViewModel");
-		if (vm is null)
-			return false;
-		var vmValue = Internal.Reflect.GetProp(vm, "Value");
-		if (vmValue is null)
-			return false;
 
 		var tl = Internal.Reflect.GetField(vmValue, "timeline", true);
 		if (tl is null)
@@ -51,29 +39,22 @@ public static class TimelineUtil
 		return true;
 	}
 
+	/// <summary>
+	/// YMM4のメインウィンドウの`TimelineAreaViewModel`から`WrapTimelineItemViewModel`のコレクションを取得できるか試す
+	/// </summary>
+	/// <param name="itemViewModels"></param>
+	/// <returns></returns>
 	public static bool TryGetItemViewModels(
 		out IEnumerable<WrapTimelineItemViewModel>? itemViewModels
 	)
 	{
 		itemViewModels = [];
-		var mainWinVM = GetMainViewModel();
-		if (mainWinVM is null)
+
+		var hasVmValue = TryGetTimelineVmValue(out dynamic? vmValue);
+		if (!hasVmValue)
 		{
 			return false;
 		}
-
-		var timelineAreaVM = Internal.Reflect.GetProp(mainWinVM, "TimelineAreaViewModel");
-		if (timelineAreaVM is null)
-		{
-			return false;
-		}
-
-		var vm = Internal.Reflect.GetProp(timelineAreaVM, "ViewModel");
-		if (vm is null)
-			return false;
-		var vmValue = Internal.Reflect.GetProp(vm, "Value");
-		if (vmValue is null)
-			return false;
 
 		var items = Internal.Reflect.GetProp(vmValue, "Items");
 		if (items is null)
@@ -89,6 +70,34 @@ public static class TimelineUtil
 			.Where(item => item is not null)
 			.OfType<WrapTimelineItemViewModel>();
 		return true;
+	}
+
+	/// <summary>
+	/// YMM4のメインウィンドウの`TimelineAreaViewModel`から`ViewModel.Value`を取得できるか試す
+	/// </summary>
+	/// <param name="vmValue"></param>
+	/// <returns></returns>
+	public static bool TryGetTimelineVmValue(out dynamic? vmValue)
+	{
+		vmValue = default;
+		var mainWinVM = GetMainViewModel();
+		if (mainWinVM is null)
+		{
+			return false;
+		}
+
+		var timelineAreaVM = Internal.Reflect.GetProp(mainWinVM, "TimelineAreaViewModel");
+		if (timelineAreaVM is null)
+		{
+			return false;
+		}
+
+		var vm = Internal.Reflect.GetProp(timelineAreaVM, "ViewModel");
+		if (vm is null)
+			return false;
+
+		vmValue = Internal.Reflect.GetProp(vm, "Value");
+		return vmValue is not null;
 	}
 
 	public static IMainViewModel? GetMainViewModel()
