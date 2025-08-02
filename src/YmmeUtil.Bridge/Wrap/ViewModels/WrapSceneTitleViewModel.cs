@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Reactive.Bindings;
+using YmmeUtil.Bridge.Internal;
 using YmmeUtil.Bridge.Wrap;
 using YukkuriMovieMaker.Commons;
 
@@ -33,18 +34,31 @@ public partial class WrapSceneTitleViewModel
 		RawSceneTitleViewModel.Title;
 	public int Index
 	{
-		get => RawSceneTitleViewModel.Index;
+		get =>
+			Reflect.GetProp<int>(
+				RawSceneTitleViewModel,
+				nameof(Index)
+			);
 		set => RawSceneTitleViewModel.Index = value;
 	}
 
 	public bool IsSelected
 	{
-		get => RawSceneTitleViewModel.IsSelected;
+		get =>
+			Reflect.GetProp<bool>(
+				RawSceneTitleViewModel,
+				nameof(IsSelected)
+			);
 		set => RawSceneTitleViewModel.IsSelected = value;
 	}
 
 	public WrapTimeLine Timeline =>
-		new(RawSceneTitleViewModel.Timeline);
+		new(
+			Reflect.GetProp<dynamic>(
+				RawSceneTitleViewModel,
+				nameof(Timeline)
+			)
+		);
 
 	protected virtual void Dispose(bool disposing)
 	{

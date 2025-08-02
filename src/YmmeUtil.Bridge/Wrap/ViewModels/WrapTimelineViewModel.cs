@@ -1,13 +1,13 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
-using System.Reactive;
 using System.Reactive.Linq;
+
 using Reactive.Bindings;
-using Reactive.Bindings;
+
 using YmmeUtil.Bridge.Internal;
 using YmmeUtil.Bridge.Wrap.Items;
+
 using YukkuriMovieMaker.Commons;
-using YukkuriMovieMaker.Plugin;
 
 namespace YmmeUtil.Bridge.Wrap.ViewModels;
 
@@ -66,11 +66,20 @@ public partial class WrapTimelineViewModel
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
-	public ReactiveProperty<dynamic> RawSelectedScene =>
-		Reflect.GetProp<ReactiveProperty<dynamic>>(
-			RawTimelineVm,
-			"SelectedScene"
-		);
+	public dynamic RawSelectedScene
+	{
+		get
+		{
+			var selectedScene = Internal.Reflect.GetProp(
+				RawTimelineVm,
+				"SelectedScene"
+			);
+			return selectedScene
+				?? throw new InvalidOperationException(
+					"SelectedScene property not found"
+				);
+		}
+	}
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Usage",
@@ -87,37 +96,66 @@ public partial class WrapTimelineViewModel
 			}
 
 			// 初期値を作成 - nullを許可
-			var initialValue = RawSelectedScene.Value
+			var rawSelectedSceneValue =
+				Internal.Reflect.GetProp(
+					RawSelectedScene,
+					"Value"
+				);
+			var initialValue = rawSelectedSceneValue
 				is not null
 				? new WrapSceneTitleViewModel(
-					RawSelectedScene.Value
+					rawSelectedSceneValue
 				)
 				: null;
 
+			// ReactivePropertyを初期化
 			_selectedScene =
 				new ReactiveProperty<WrapSceneTitleViewModel?>(
 					initialValue
 				);
 
 			// Subscriptionを保存して後でDisposeできるように
-			_selectedSceneSubscription =
-				RawSelectedScene.Subscribe(rawScene =>
+			_selectedSceneSubscription = Observable
+				.FromEventPattern<
+					PropertyChangedEventHandler,
+					PropertyChangedEventArgs
+				>(
+					h =>
+						RawSelectedScene.PropertyChanged +=
+							h,
+					h =>
+						RawSelectedScene.PropertyChanged -=
+							h
+				)
+				.Where(x =>
+					x.EventArgs.PropertyName
+					== nameof(
+						ReactiveProperty<object>.Value
+					)
+				)
+				.Subscribe(_ =>
 				{
-					// 既存の値を破棄してから新しい値を設定
-					var oldValue = _selectedScene.Value;
-
+					// 変更処理
+					var oldValue = _selectedScene?.Value;
 					try
 					{
-						_selectedScene.Value = rawScene
-							is not null
-							? new WrapSceneTitleViewModel(
-								rawScene
-							)
-							: null;
+						if (_selectedScene is not null)
+						{
+							var newRawValue =
+								Internal.Reflect.GetProp(
+									RawSelectedScene,
+									"Value"
+								);
+							_selectedScene.Value =
+								newRawValue is not null
+									? new WrapSceneTitleViewModel(
+										newRawValue
+									)
+									: null;
+						}
 					}
 					finally
 					{
-						// 古いインスタンスを必ず破棄
 						oldValue?.Dispose();
 					}
 				});
