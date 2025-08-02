@@ -81,7 +81,7 @@ public static class TimelineUtil
 	/// </summary>
 	/// <param name="vmValue"></param>
 	/// <returns></returns>
-	public static bool TryGetRawTimelineVmValue(
+	public static bool TryGetTimelineVmValue(
 		out WrapTimelineViewModel? vmValue
 	)
 	{
