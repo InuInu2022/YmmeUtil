@@ -26,7 +26,9 @@ public static class TimelineUtil
 	{
 		timeLine = default;
 
-		var hasVmValue = TryGetTimelineVmValue(out dynamic? vmValue);
+		var hasVmValue = TryGetRawTimelineVmValue(
+			out dynamic? vmValue
+		);
 		if (!hasVmValue)
 		{
 			return false;
@@ -50,7 +52,9 @@ public static class TimelineUtil
 	{
 		itemViewModels = [];
 
-		var hasVmValue = TryGetTimelineVmValue(out dynamic? vmValue);
+		var hasVmValue = TryGetRawTimelineVmValue(
+			out dynamic? vmValue
+		);
 		if (!hasVmValue)
 		{
 			return false;
@@ -77,7 +81,32 @@ public static class TimelineUtil
 	/// </summary>
 	/// <param name="vmValue"></param>
 	/// <returns></returns>
-	public static bool TryGetTimelineVmValue(out dynamic? vmValue)
+	public static bool TryGetRawTimelineVmValue(
+		out WrapTimelineViewModel? vmValue
+	)
+	{
+		vmValue = default;
+
+		var success = TryGetRawTimelineVmValue(
+			out dynamic? rawVmValue
+		);
+		if (!success)
+		{
+			return false;
+		}
+
+		vmValue = new WrapTimelineViewModel(rawVmValue);
+		return true;
+	}
+
+	/// <summary>
+	/// YMM4のメインウィンドウの`TimelineAreaViewModel`から`ViewModel.Value`を取得できるか試す
+	/// </summary>
+	/// <param name="vmValue"></param>
+	/// <returns></returns>
+	static bool TryGetRawTimelineVmValue(
+		out dynamic? vmValue
+	)
 	{
 		vmValue = default;
 		var mainWinVM = GetMainViewModel();
