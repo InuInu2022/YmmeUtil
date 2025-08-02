@@ -23,10 +23,10 @@ public partial class WrapTimelineViewModel
 	private IDisposable? _selectedSceneSubscription;
 
 	public WrapTimelineViewModel(
-		dynamic timelineAreaViewModel
+		dynamic timelineViewModelValue
 	)
 	{
-		RawTimelineVm = timelineAreaViewModel;
+		RawTimelineVm = timelineViewModelValue;
 	}
 
 	/// <summary>
@@ -67,7 +67,10 @@ public partial class WrapTimelineViewModel
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public ReactiveProperty<dynamic> RawSelectedScene =>
-		RawTimelineVm.SelectedScene;
+		Reflect.GetProp<ReactiveProperty<dynamic>>(
+			RawTimelineVm,
+			"SelectedScene"
+		);
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Usage",
