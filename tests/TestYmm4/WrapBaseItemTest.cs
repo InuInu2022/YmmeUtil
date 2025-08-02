@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using Xunit;
 
-using YmmeUtil.Ymm4.Wrap.Items;
+using YmmeUtil.Bridge.Wrap.Items;
 
 using YukkuriMovieMaker;
 using YukkuriMovieMaker.Plugin;
