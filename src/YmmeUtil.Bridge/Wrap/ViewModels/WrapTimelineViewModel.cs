@@ -1,5 +1,8 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Reactive;
+using System.Reactive.Linq;
+using Reactive.Bindings;
 using Reactive.Bindings;
 using YmmeUtil.Bridge.Internal;
 using YmmeUtil.Bridge.Wrap.Items;
@@ -16,7 +19,8 @@ public partial class WrapTimelineViewModel
 		IDisposable
 {
 	bool _disposedValue;
-	private ReactiveProperty<WrapSceneTitleViewModel> _selectedScene;
+	ReactiveProperty<WrapSceneTitleViewModel?>? _selectedScene;
+	private IDisposable? _selectedSceneSubscription;
 
 	public WrapTimelineViewModel(
 		dynamic timelineAreaViewModel
@@ -65,17 +69,56 @@ public partial class WrapTimelineViewModel
 	public ReactiveProperty<dynamic> RawSelectedScene =>
 		RawTimelineVm.SelectedScene;
 
-	public ReactiveProperty<WrapSceneTitleViewModel> SelectedScene
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(
+		"Usage",
+		"SMA0040:Missing Using Statement",
+		Justification = "<保留中>"
+	)]
+	public ReactiveProperty<WrapSceneTitleViewModel?> SelectedScene
 	{
 		get
 		{
+			if (_selectedScene is not null)
+			{
+				return _selectedScene;
+			}
+
+			// 初期値を作成 - nullを許可
+			var initialValue = RawSelectedScene.Value
+				is not null
+				? new WrapSceneTitleViewModel(
+					RawSelectedScene.Value
+				)
+				: null;
+
 			_selectedScene =
-				new ReactiveProperty<WrapSceneTitleViewModel>
+				new ReactiveProperty<WrapSceneTitleViewModel?>(
+					initialValue
+				);
+
+			// Subscriptionを保存して後でDisposeできるように
+			_selectedSceneSubscription =
+				RawSelectedScene.Subscribe(rawScene =>
 				{
-					Value = new WrapSceneTitleViewModel(
-						RawTimelineVm.SelectedScene
-					),
-				};
+					// 既存の値を破棄してから新しい値を設定
+					var oldValue = _selectedScene.Value;
+
+					try
+					{
+						_selectedScene.Value = rawScene
+							is not null
+							? new WrapSceneTitleViewModel(
+								rawScene
+							)
+							: null;
+					}
+					finally
+					{
+						// 古いインスタンスを必ず破棄
+						oldValue?.Dispose();
+					}
+				});
+
 			return _selectedScene;
 		}
 	}
@@ -87,11 +130,14 @@ public partial class WrapTimelineViewModel
 			if (disposing)
 			{
 				RawTimelineVm?.Dispose();
-				_selectedScene?.Dispose();
-			}
 
-			// TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、ファイナライザーをオーバーライドします
-			// TODO: 大きなフィールドを null に設定します
+				// _selectedScene.Valueも破棄する
+				_selectedScene?.Value?.Dispose();
+				_selectedScene?.Dispose();
+
+				_selectedSceneSubscription?.Dispose();
+				RawSelectedScene?.Dispose();
+			}
 			_disposedValue = true;
 		}
 	}
