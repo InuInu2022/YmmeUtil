@@ -16,6 +16,7 @@ public partial class WrapTimelineViewModel
 		IDisposable
 {
 	bool _disposedValue;
+	private ReactiveProperty<WrapSceneTitleViewModel> _selectedScene;
 
 	public WrapTimelineViewModel(
 		dynamic timelineAreaViewModel
@@ -64,6 +65,21 @@ public partial class WrapTimelineViewModel
 	public ReactiveProperty<dynamic> RawSelectedScene =>
 		RawTimelineVm.SelectedScene;
 
+	public ReactiveProperty<WrapSceneTitleViewModel> SelectedScene
+	{
+		get
+		{
+			_selectedScene =
+				new ReactiveProperty<WrapSceneTitleViewModel>
+				{
+					Value = new WrapSceneTitleViewModel(
+						RawTimelineVm.SelectedScene
+					),
+				};
+			return _selectedScene;
+		}
+	}
+
 	protected virtual void Dispose(bool disposing)
 	{
 		if (!_disposedValue)
@@ -71,6 +87,7 @@ public partial class WrapTimelineViewModel
 			if (disposing)
 			{
 				RawTimelineVm?.Dispose();
+				_selectedScene?.Dispose();
 			}
 
 			// TODO: アンマネージド リソース (アンマネージド オブジェクト) を解放し、ファイナライザーをオーバーライドします
