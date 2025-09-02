@@ -5,6 +5,7 @@ using Dynamitey;
 using YmmeUtil.Bridge.Internal;
 using YmmeUtil.Bridge.Wrap.Items;
 using YukkuriMovieMaker.Plugin.Effects;
+using YukkuriMovieMaker.Project;
 
 namespace YmmeUtil.Bridge.Wrap;
 
@@ -38,6 +39,11 @@ public partial record WrapTimeLine
 	}
 	public int Length => _timeline.Length;
 	public int MaxLayer => _timeline.MaxLayer;
+
+	/* TODO
+	public LayerSettings LayerSettings => _timeline.LayerSettings;
+	public LayerSelection LayerSelection => _timeline.LayerSelection;
+	*/
 
 	#region Item
 	//--------------------------------------------------------+
@@ -88,7 +94,8 @@ public partial record WrapTimeLine
 	//--------------------------------------------------------+
 	#endregion
 
-	public YukkuriMovieMaker.Project.VideoInfo VideoInfo => _timeline.VideoInfo;
+	public TimelineVerticalLine VerticalLine => _timeline.VerticalLine;
+	public VideoInfo VideoInfo => _timeline.VideoInfo;
 
 	readonly dynamic _timeline;
 
