@@ -3,6 +3,8 @@ using Epoxy;
 using YmmeUtil.Bridge;
 using YmmeUtil.Bridge.Wrap.Items;
 using YmmeUtil.Ymm4;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace YmmeUtil.Sandbox;
 
@@ -13,6 +15,7 @@ public class MainViewModel
 	public Command? TaskbarUtilCommand { get; set; }
 	public Command? WindowUtilCommand { get; set; }
 	public Command? TimelineUtilCommand { get; set; }
+	public Command? ItemEditorUtilCommand { get; set; }
 
 	public MainViewModel()
 	{
@@ -23,6 +26,7 @@ public class MainViewModel
 		TaskbarUtilCommand = TestTaskbarUtils();
 		WindowUtilCommand = TestWindowUtils();
 		TimelineUtilCommand = TestTimelineUtils();
+		ItemEditorUtilCommand = TestItemEditorUtil();
 	}
 
 	static Command TestTaskbarUtils() =>
@@ -80,6 +84,17 @@ public class MainViewModel
 				Debug.Assert(timeLine is not null, "YMM4のタイムラインが取得できませんでした。");
 				if (timeLine is null) return default;
 
+				var hasItemVm = TimelineUtil.TryGetItemViewModels(out var itemViewModels);
+				Debug.Assert(
+					hasItemVm,
+					"YMM4のアイテムビューが取得できませんでした。"
+				);
+				Debug.Assert(
+					itemViewModels is not null,
+					"YMM4のアイテムビューが取得できませんでした。"
+				);
+				if (itemViewModels is null) return default;
+
 				//get
 				Debug.WriteLine($"Timeline ID: {timeLine.Id}");
 				Debug.WriteLine($"Timeline Name: {timeLine.Name}");
@@ -117,6 +132,41 @@ public class MainViewModel
 
 				//追加
 				timeLine.TryAddItems([t]);
+
+			}
+			catch (System.Exception e)
+			{
+				Debug.WriteLine($"{e.Message} {e.StackTrace}");
+			}
+			return default;
+		});
+
+	static Command TestItemEditorUtil() =>
+		Command.Factory.Create(() =>
+		{
+			try
+			{
+				var hasIE = ItemEditorUtil.TryGetItemEditor(out var itemEditor);
+				Debug.Assert(hasIE, "YMM4のアイテムエディタが取得できませんでした。");
+				if (!hasIE) return default;
+
+				Debug.Assert(itemEditor is not null, "YMM4のアイテムエディタが取得できませんでした。");
+				if (itemEditor is null) return default;
+
+				//get
+				Debug.WriteLine($"""
+					ItemEditor EditorInfo: {itemEditor.EditorInfo}
+						- EditorType: {itemEditor.EditorInfo.EditorType}
+						- Layer: {itemEditor.EditorInfo.Layer}
+					ItemEditor Items count: {itemEditor.Items.Value.Count}
+						{string.Join("\n\t- ", itemEditor.Items.Value.Select(i => i.RawItemTypeName))}
+					""");
+
+				//set
+
+
+				//追加
+
 
 			}
 			catch (System.Exception e)
