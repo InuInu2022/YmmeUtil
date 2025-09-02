@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 using Dynamitey;
 using YmmeUtil.Bridge.Wrap;
 using YmmeUtil.Bridge.Wrap.Items;
@@ -22,7 +24,8 @@ public static class TimelineUtil
 	/// </summary>
 	/// <param name="timeLine"></param>
 	/// <returns></returns>
-	public static bool TryGetTimeline(out WrapTimeLine? timeLine)
+	public static bool TryGetTimeline(
+		[NotNullWhen(true)] out WrapTimeLine? timeLine)
 	{
 		timeLine = default;
 
@@ -34,7 +37,11 @@ public static class TimelineUtil
 			return false;
 		}
 
-		var tl = Internal.Reflect.GetField(vmValue, "timeline", true);
+		var tl = Internal.Reflect.GetField(
+			vmValue,
+			"timeline",
+			true
+		);
 		if (tl is null)
 			return false;
 		timeLine = new WrapTimeLine(tl);
@@ -47,33 +54,77 @@ public static class TimelineUtil
 	/// <param name="itemViewModels"></param>
 	/// <returns></returns>
 	public static bool TryGetItemViewModels(
+		[NotNullWhen(true)]
 		out IEnumerable<WrapTimelineItemViewModel>? itemViewModels
 	)
 	{
 		itemViewModels = [];
 
-		var hasVmValue = TryGetRawTimelineVmValue(
-			out dynamic? vmValue
-		);
-		if (!hasVmValue)
+		if (Ymm4Version.HasDocked)
 		{
-			return false;
+			var hasVmValue = TryGetRawTimelineVmValue(
+				out dynamic? vmValue
+			);
+			if (!hasVmValue)
+			{
+				return false;
+			}
+
+			var items = Internal.Reflect.GetProp(
+				vmValue,
+				"Items"
+			);
+			if (items is null)
+				return false;
+
+			if (items is not IEnumerable<dynamic> eItems)
+			{
+				return false;
+			}
+
+			itemViewModels = eItems
+				.Select(
+					item => new WrapTimelineItemViewModel(
+						item
+					)
+				)
+				.Where(item => item is not null)
+				.OfType<WrapTimelineItemViewModel>();
+
+			return true;
 		}
-
-		var items = Internal.Reflect.GetProp(vmValue, "Items");
-		if (items is null)
-			return false;
-
-		if (items is not IEnumerable<dynamic> eItems)
+		else
 		{
-			return false;
-		}
+			var hasVmValue = TryGetRawTimelineVmValue(
+				out dynamic? vmValue
+			);
+			if (!hasVmValue)
+			{
+				return false;
+			}
 
-		itemViewModels = eItems
-			.Select(item => new WrapTimelineItemViewModel(item))
-			.Where(item => item is not null)
-			.OfType<WrapTimelineItemViewModel>();
-		return true;
+			var items = Internal.Reflect.GetProp(
+				vmValue,
+				"Items"
+			);
+			if (items is null)
+				return false;
+
+			if (items is not IEnumerable<dynamic> eItems)
+			{
+				return false;
+			}
+
+			itemViewModels = eItems
+				.Select(
+					item => new WrapTimelineItemViewModel(
+						item
+					)
+				)
+				.Where(item => item is not null)
+				.OfType<WrapTimelineItemViewModel>();
+			return true;
+		}
 	}
 
 	/// <summary>
@@ -82,21 +133,30 @@ public static class TimelineUtil
 	/// <param name="vmValue"></param>
 	/// <returns></returns>
 	public static bool TryGetTimelineVmValue(
+		[NotNullWhen(true)]
 		out WrapTimelineViewModel? vmValue
 	)
 	{
 		vmValue = default;
 
-		var success = TryGetRawTimelineVmValue(
-			out dynamic? rawVmValue
-		);
-		if (!success)
+		if (Ymm4Version.HasDocked)
 		{
+			//TODO: Implement for docked version
 			return false;
 		}
+		else
+		{
+			var success = TryGetRawTimelineVmValue(
+				out dynamic? rawVmValue
+			);
+			if (!success)
+			{
+				return false;
+			}
 
-		vmValue = new WrapTimelineViewModel(rawVmValue);
-		return true;
+			vmValue = new WrapTimelineViewModel(rawVmValue);
+			return true;
+		}
 	}
 
 	/// <summary>
@@ -105,28 +165,59 @@ public static class TimelineUtil
 	/// <param name="vmValue"></param>
 	/// <returns></returns>
 	static bool TryGetRawTimelineVmValue(
-		out dynamic? vmValue
+		[NotNullWhen(true)] out dynamic? vmValue
 	)
 	{
 		vmValue = default;
-		var mainWinVM = GetMainViewModel();
-		if (mainWinVM is null)
+
+		if (Ymm4Version.HasDocked)
 		{
-			return false;
-		}
+			//TODO: Implement for docked version
+			var mainWinVM = GetMainViewModel();
+			if (mainWinVM is null)
+			{
+				return false;
+			}
 
-		var timelineAreaVM = Internal.Reflect.GetProp(mainWinVM, "TimelineAreaViewModel");
-		if (timelineAreaVM is null)
+			var timelineAreaVM = Internal.Reflect.GetProp(
+				mainWinVM,
+				"ActiveTimelineViewModel",
+				true
+			);
+			if (timelineAreaVM is null)
+			{
+				return false;
+			}
+			vmValue = timelineAreaVM;
+			return true;
+		}
+		else
 		{
-			return false;
+			var mainWinVM = GetMainViewModel();
+			if (mainWinVM is null)
+			{
+				return false;
+			}
+
+			var timelineAreaVM = Internal.Reflect.GetProp(
+				mainWinVM,
+				"TimelineAreaViewModel"
+			);
+			if (timelineAreaVM is null)
+			{
+				return false;
+			}
+
+			var vm = Internal.Reflect.GetProp(
+				timelineAreaVM,
+				"ViewModel"
+			);
+			if (vm is null)
+				return false;
+
+			vmValue = Internal.Reflect.GetProp(vm, "Value");
+			return vmValue is not null;
 		}
-
-		var vm = Internal.Reflect.GetProp(timelineAreaVM, "ViewModel");
-		if (vm is null)
-			return false;
-
-		vmValue = Internal.Reflect.GetProp(vm, "Value");
-		return vmValue is not null;
 	}
 
 	public static IMainViewModel? GetMainViewModel()
@@ -134,8 +225,16 @@ public static class TimelineUtil
 		var mainWindow = WindowUtil.GetYmmMainWindow();
 		if (mainWindow is null)
 			return default;
-		dynamic viewModel = mainWindow.DataContext;
-		return viewModel as IMainViewModel;
+		if (Ymm4Version.HasDocked)
+		{
+			dynamic? viewModel = mainWindow.DataContext as IMainViewModel;
+			return viewModel;
+		}
+		else
+		{
+			dynamic viewModel = mainWindow.DataContext;
+			return viewModel as IMainViewModel;
+		}
 	}
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011")]
