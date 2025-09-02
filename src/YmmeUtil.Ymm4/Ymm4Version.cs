@@ -1,3 +1,6 @@
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("TestYmm4")]
 namespace YmmeUtil.Ymm4;
 
 /// <summary>
@@ -5,8 +8,8 @@ namespace YmmeUtil.Ymm4;
 /// </summary>
 public static class Ymm4Version
 {
-	public static Version Current
-		=> YukkuriMovieMaker.Commons.AppVersion.Current;
+	public static Version Current { get; internal set; }
+		= YukkuriMovieMaker.Commons.AppVersion.Current;
 
 	#region semantic
 
