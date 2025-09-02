@@ -60,7 +60,12 @@ public static class WindowUtil
 
 	static IEnumerable<Window> GetWindows()
 	{
-		List<dynamic> windows = [.. Application.Current.Windows];
+		var ws = Application.Current.Windows;
+		if (ws is null or [])
+		{
+			return [];
+		}
+		List<dynamic> windows = [.. ws];
 		return windows
 			.OfType<Window>();
 	}
