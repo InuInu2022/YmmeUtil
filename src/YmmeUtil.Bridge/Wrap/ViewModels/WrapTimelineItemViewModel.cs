@@ -7,6 +7,9 @@ using YmmeUtil.Bridge.Wrap.Items;
 using YmmeUtil.Bridge.Internal;
 using YukkuriMovieMaker.Commons;
 using YukkuriMovieMaker.Plugin;
+using YmmeUtil.Ymm4;
+using System.Windows.Media;
+using System.Windows;
 
 namespace YmmeUtil.Bridge.Wrap.ViewModels;
 
@@ -49,20 +52,32 @@ public partial class WrapTimelineItemViewModel
 		set => RawTimelineItemViewModel.IsLocked = value;
 	}
 
-	public bool IsVisible
+	/// <summary>
+	/// Gets a value indicating whether the item is hidden.
+	/// </summary>
+	/// <seealso cref="WrapBaseItem.IsHidden"/>
+	public bool IsHidden
 	{
 		get =>
 			Reflect.GetProp<bool>(
 				RawTimelineItemViewModel,
-				nameof(IsVisible)
+				nameof(IsHidden)
 			);
-		set => RawTimelineItemViewModel.IsVisible = value;
+		private set => RawTimelineItemViewModel.IsHidden = value;
 	}
 
-	public Color Color
+	[Obsolete($"Use {nameof(IsHidden)} instead.")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public bool IsVisible
+	{
+		get => IsHidden;
+		set => IsHidden = value;
+	}
+
+	public System.Windows.Media.Color Color
 	{
 		get =>
-			Reflect.GetProp<Color>(
+			Reflect.GetProp<System.Windows.Media.Color>(
 				RawTimelineItemViewModel,
 				nameof(Color)
 			);
@@ -89,13 +104,19 @@ public partial class WrapTimelineItemViewModel
 		set => RawTimelineItemViewModel.Label = value;
 	}
 
+	[Obsolete($"Deprecated", true)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public int Layer
 	{
-		get =>
-			Reflect.GetProp<int>(
-				RawTimelineItemViewModel,
-				nameof(Layer)
-			);
+		get
+		{
+			return Ymm4Version.Current > new Version(4, 44, 0, 0)
+				? -1
+				: Reflect.GetProp<int>(
+					RawTimelineItemViewModel,
+					nameof(Layer)
+				);
+		}
 	}
 
 	public ICommand SelectCommand =>
@@ -114,6 +135,55 @@ public partial class WrapTimelineItemViewModel
 			);
 			return new WrapBaseItem(raw);
 		}
+	}
+
+	public bool IsBackgroundImageVisible
+	{
+		get =>
+			Reflect.GetProp<bool>(
+				RawTimelineItemViewModel,
+				nameof(IsBackgroundImageVisible)
+			);
+		set => RawTimelineItemViewModel.IsBackgroundImageVisible = value;
+	}
+
+	public ImageSource BackgroundImage
+	{
+		get =>
+			Reflect.GetProp<ImageSource>(
+				RawTimelineItemViewModel,
+				nameof(BackgroundImage)
+			);
+		private set => RawTimelineItemViewModel.BackgroundImage = value;
+	}
+
+	public Thickness BackgroundImageMargin
+	{
+		get =>
+			Reflect.GetProp<Thickness>(
+				RawTimelineItemViewModel,
+				nameof(BackgroundImageMargin)
+			);
+	}
+
+	public bool IsClipping
+	{
+		get =>
+			Reflect.GetProp<bool>(
+				RawTimelineItemViewModel,
+				nameof(IsClipping)
+			);
+		private set => RawTimelineItemViewModel.IsClipping = value;
+	}
+
+	public bool IsMiniItem
+	{
+		get =>
+			Reflect.GetProp<bool>(
+				RawTimelineItemViewModel,
+				nameof(IsMiniItem)
+			);
+		private set => RawTimelineItemViewModel.IsMiniItem = value;
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
