@@ -19,7 +19,7 @@ if ($major -eq 4 -and $minor -eq 45 -and $build -ge 1) {
 $propsPath = Join-Path $PSScriptRoot "..\src\Directory.Build.props"
 $propsPath = [System.IO.Path]::GetFullPath($propsPath)
 
-[xml]$props = Get-Content $propsPath
+[xml]$props = Get-Content $propsPath -Raw
 $pg = $props.Project.PropertyGroup | Where-Object { $_.DefineConstants }
 if ($pg) {
     # DefineConstantsノードを直接取得
