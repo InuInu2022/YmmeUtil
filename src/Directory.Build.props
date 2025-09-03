@@ -5,34 +5,24 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
-
     <InvariantGlobalization>true</InvariantGlobalization>
-
-		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     <!-- net analyzer -->
-    <EnableNETAnalyzers
-       Condition="'$(Configuration)' == 'Debug'">true</EnableNETAnalyzers>
+    <EnableNETAnalyzers Condition="'$(Configuration)' == 'Debug'">true</EnableNETAnalyzers>
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
     <ReportAnalyzer Condition="'$(Configuration)' == 'Debug'">true</ReportAnalyzer>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
-
-
-
     <!-- version hash -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-
     <!-- info -->
     <Product>YmmeUtil</Product>
     <Description>YMM4 Plugin utilities library</Description>
     <Copyright>InuInu</Copyright>
     <NeutralLanguage>ja-JP</NeutralLanguage>
     <Version>0.1.0.0</Version>
-
     <RepositoryUrl>https://github.com/InuInu2022/YmmeUtil</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-
     <!-- AssemblyInfo プロパティ -->
     <AssemblyTitle>YmmeUtil</AssemblyTitle>
     <SupportedCultures>en-US;ja</SupportedCultures>
@@ -40,70 +30,56 @@
     <MinVerTagPrefix>v</MinVerTagPrefix>
     <MinVerMinimumMajorMinor>0.1</MinVerMinimumMajorMinor>
   </PropertyGroup>
-
   <!-- build -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <Deterministic>true</Deterministic>
     <DeterministicSourceRoot>/_/</DeterministicSourceRoot>
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
     <PathMap>$(RepoRoot)=$(DeterministicSourceRoot)</PathMap>
-
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
-  <PropertyGroup
-     Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>false</Optimize>
   </PropertyGroup>
-
+  <Target Name="SetYmm4VersionProps" BeforeTargets="BeforeBuild">
+    <Exec Command="pwsh -ExecutionPolicy Bypass -File $(MSBuildThisFileDirectory)..\scripts\SetYmm4VersionProps.ps1" />
+  </Target>
+  <PropertyGroup>
+    <DefineConstants>FOCUSHELPER_DEFAULTFOCUS_REMOVED</DefineConstants>
+  </PropertyGroup>
   <!-- analyzers -->
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <PackageReference
-       Include="Roslynator.Analyzers"
-       Version="4.13.1">
+    <PackageReference Include="Roslynator.Analyzers" Version="4.13.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="Roslynator.CodeAnalysis.Analyzers"
-       Version="4.13.1">
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.13.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="Roslynator.Formatting.Analyzers"
-       Version="4.13.1">
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.13.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="Roslynator.CodeFixes"
-       Version="4.13.1">
+    <PackageReference Include="Roslynator.CodeFixes" Version="4.13.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="Roslynator.Refactorings"
-       Version="4.13.1">
+    <PackageReference Include="Roslynator.Refactorings" Version="4.13.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="Meziantou.Analyzer"
-       Version="2.0.197">
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.197">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="NetFabric.Hyperlinq.Analyzer"
-       Version="2.3.0">
+    <PackageReference Include="NetFabric.Hyperlinq.Analyzer" Version="2.3.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="SonarAnalyzer.CSharp"
-       Version="9.16.0.82469">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.16.0.82469">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -111,9 +87,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-       Include="Microsoft.VisualStudio.Threading.Analyzers"
-       Version="17.13.61">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.61">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -140,7 +114,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
-
     <PackageReference Include="MinVer" Version="6.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
