@@ -13,6 +13,7 @@ public static class ItemFactory
 	/// </summary>
 	/// <param name="item">YMM4のアイテムオブジェクト</param>
 	/// <returns>適切な型のラッパーオブジェクト</returns>
+	/// <seealso cref="Create{T}(dynamic)"/>
 	public static WrapBaseItem Create(dynamic item)
 	{
 		if (item is null)
@@ -39,5 +40,19 @@ public static class ItemFactory
 			// 未知のタイプの場合は基本クラスを使用
 			_ => new WrapBaseItem(item),
 		};
+	}
+
+	/// <inheritdoc cref="Create(dynamic)"/>
+	/// <typeparam name="T">ラッパーオブジェクトの型</typeparam>
+	/// <exception cref="InvalidCastException"></exception>
+	/// <seealso cref="Create(dynamic)"/>
+	public static T Create<T>(dynamic item)
+		where T : WrapBaseItem
+	{
+		var wrapped = Create(item);
+		return wrapped is T t
+			? t
+			: throw new InvalidCastException(
+				$"Cannot cast {wrapped.GetType().FullName} to {typeof(T).FullName}");
 	}
 }
