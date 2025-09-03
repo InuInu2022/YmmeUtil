@@ -60,71 +60,35 @@ public static class TimelineUtil
 	{
 		itemViewModels = [];
 
-		if (Ymm4Version.HasDocked)
+		var hasVmValue = TryGetRawTimelineVmValue(
+			out dynamic? vmValue
+		);
+		if (!hasVmValue)
 		{
-			var hasVmValue = TryGetRawTimelineVmValue(
-				out dynamic? vmValue
-			);
-			if (!hasVmValue)
-			{
-				return false;
-			}
-
-			var items = Internal.Reflect.GetProp(
-				vmValue,
-				"Items"
-			);
-			if (items is null)
-				return false;
-
-			if (items is not IEnumerable<dynamic> eItems)
-			{
-				return false;
-			}
-
-			itemViewModels = eItems
-				.Select(
-					item => new WrapTimelineItemViewModel(
-						item
-					)
-				)
-				.Where(item => item is not null)
-				.OfType<WrapTimelineItemViewModel>();
-
-			return true;
+			return false;
 		}
-		else
+
+		var items = Internal.Reflect.GetProp(
+			vmValue,
+			"Items"
+		);
+		if (items is null)
+			return false;
+
+		if (items is not IEnumerable<dynamic> eItems)
 		{
-			var hasVmValue = TryGetRawTimelineVmValue(
-				out dynamic? vmValue
-			);
-			if (!hasVmValue)
-			{
-				return false;
-			}
-
-			var items = Internal.Reflect.GetProp(
-				vmValue,
-				"Items"
-			);
-			if (items is null)
-				return false;
-
-			if (items is not IEnumerable<dynamic> eItems)
-			{
-				return false;
-			}
-
-			itemViewModels = eItems
-				.Select(
-					item => new WrapTimelineItemViewModel(
-						item
-					)
-				)
-				.Where(item => item is not null)
-				.OfType<WrapTimelineItemViewModel>();
-			return true;
+			return false;
 		}
+
+		itemViewModels = eItems
+			.Select(
+				item => new WrapTimelineItemViewModel(
+					item
+				)
+			)
+			.Where(item => item is not null)
+			.OfType<WrapTimelineItemViewModel>();
+		return true;
 	}
 
 	/// <summary>
@@ -139,24 +103,16 @@ public static class TimelineUtil
 	{
 		vmValue = default;
 
-		if (Ymm4Version.HasDocked)
+		var success = TryGetRawTimelineVmValue(
+			out dynamic? rawVmValue
+		);
+		if (!success)
 		{
-			//TODO: Implement for docked version
 			return false;
 		}
-		else
-		{
-			var success = TryGetRawTimelineVmValue(
-				out dynamic? rawVmValue
-			);
-			if (!success)
-			{
-				return false;
-			}
 
-			vmValue = new WrapTimelineViewModel(rawVmValue);
-			return true;
-		}
+		vmValue = new WrapTimelineViewModel(rawVmValue);
+		return true;
 	}
 
 	/// <summary>
@@ -172,7 +128,6 @@ public static class TimelineUtil
 
 		if (Ymm4Version.HasDocked)
 		{
-			//TODO: Implement for docked version
 			var mainWinVM = GetMainViewModel();
 			if (mainWinVM is null)
 			{
