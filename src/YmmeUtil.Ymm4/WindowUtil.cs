@@ -11,10 +11,17 @@ public static class WindowUtil
 	/// </summary>
 	public static void FocusBack()
 	{
+#if FOCUSHELPER_DEFAULTFOCUS_REMOVED
+		// v4.45.1～？: DefaultFocusが削除された場合の処理
+		var mainWindow = GetYmmMainWindow();
+		mainWindow?.Activate();
+#else
+		// v4.45.0.x 以前
 		if (FocusHelper.DefaultFocus is null) { return; }
 
 		Window.GetWindow(FocusHelper.DefaultFocus).Activate();
 		FocusHelper.FocusWindowContent(FocusHelper.DefaultFocus);
+#endif
 	}
 
 	/// <summary>
