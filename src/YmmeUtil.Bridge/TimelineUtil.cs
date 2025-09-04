@@ -1,8 +1,12 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 using Dynamitey;
+
+using Reactive.Bindings;
+
 using YmmeUtil.Bridge.Wrap;
 using YmmeUtil.Bridge.Wrap.Items;
 using YmmeUtil.Bridge.Wrap.ViewModels;
@@ -137,8 +141,36 @@ public static class TimelineUtil
 			var timelineAreaVM = Internal.Reflect.GetProp(
 				mainWinVM,
 				"ActiveTimelineViewModel",
-				true
+				Ymm4Version.Current < new Version(4,45,1)
 			);
+
+			if (timelineAreaVM is null)
+			{
+				//取得できない場合は無理やり調べる
+				var viewmodels = Internal.Reflect.GetProp(
+					mainWinVM,
+					"DocumentViewModels",
+					false
+				);
+
+				foreach (var vm in viewmodels!)
+				{
+					var n = vm?.GetType().Name;
+					if (n == "DocumentAreaViewModel")
+					{
+						var ivm = Internal.Reflect.GetProp(
+							vm,
+							"ViewModel"
+						);
+						if (ivm?.GetType().Name == "TimelineViewModel")
+						{
+							timelineAreaVM = ivm;
+							break;
+						}
+					}
+				}
+			}
+
 			if (timelineAreaVM is null)
 			{
 				return false;
