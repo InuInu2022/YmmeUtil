@@ -16,6 +16,10 @@
       <Private>false</Private>
       <CopyLocal>false</CopyLocal>
     </Reference>
+    <Reference Include="$(YMM4_PATH)\Microsoft.Extensions.Logging.Abstractions.dll">
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ImpromptuInterface" Version="8.0.6" />
