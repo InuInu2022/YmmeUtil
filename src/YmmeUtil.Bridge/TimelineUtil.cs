@@ -207,21 +207,35 @@ public static class TimelineUtil
 		}
 	}
 
-	public static IMainViewModel? GetMainViewModel()
+	public static IMainViewModel? GetMainViewModel(
+		int index = 0
+	)
 	{
-		var mainWindow = WindowUtil.GetYmmMainWindow();
-		if (mainWindow is null)
-			return default;
 		if (Ymm4Version.HasDocked)
 		{
-			dynamic? viewModel = mainWindow.DataContext as IMainViewModel;
-			return viewModel;
+			var mainWindows =
+				WindowUtil.GetYmmMainWindows();
+			if (mainWindows is null)
+			{
+				return default;
+			}
+			var win = mainWindows
+				.FirstOrDefault(w =>
+					w.DataContext is IMainViewModel vm
+					&& vm.Index == index);
+			return win is null
+				? default
+				: ViewModelUtil.GetParentViewModel(win);
 		}
-		else
+
+		//旧バージョン向け
+		var mainWindow = WindowUtil.GetYmmMainWindow();
+		if (mainWindow is null)
 		{
-			dynamic viewModel = mainWindow.DataContext;
-			return viewModel as IMainViewModel;
+			return default;
 		}
+		dynamic viewModel = mainWindow.DataContext;
+		return viewModel as IMainViewModel;
 	}
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011")]
