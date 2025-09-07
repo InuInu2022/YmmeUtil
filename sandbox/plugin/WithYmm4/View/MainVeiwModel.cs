@@ -5,6 +5,10 @@ using YmmeUtil.Bridge.Wrap.Items;
 using YmmeUtil.Ymm4;
 using System.Reactive;
 using System.Reactive.Linq;
+using YukkuriMovieMaker.ViewModels;
+
+using System.Windows.Controls;
+
 
 namespace YmmeUtil.Sandbox;
 
@@ -14,8 +18,11 @@ public class MainViewModel
 	public Command? Ready { get; set; }
 	public Command? TaskbarUtilCommand { get; set; }
 	public Command? WindowUtilCommand { get; set; }
+	public Command? MainViewModelUtilCommand { get; set; }
 	public Command? TimelineUtilCommand { get; set; }
 	public Command? ItemEditorUtilCommand { get; set; }
+
+	public UserControl? View { get; private set; }
 
 	public MainViewModel()
 	{
@@ -25,9 +32,13 @@ public class MainViewModel
 		});
 		TaskbarUtilCommand = TestTaskbarUtils();
 		WindowUtilCommand = TestWindowUtils();
+		MainViewModelUtilCommand = TestMainViewModelUtil();
 		TimelineUtilCommand = TestTimelineUtils();
 		ItemEditorUtilCommand = TestItemEditorUtil();
 	}
+
+	public void AttachView(UserControl view)
+		=> View = view;
 
 	static Command TestTaskbarUtils() =>
 		Command.Factory.Create(async () =>
@@ -64,6 +75,33 @@ public class MainViewModel
 
 				var tool = WindowUtil.GetToolWindow("YMM4のツールウィンドウ");
 				Debug.Assert(tool is not null, "YMM4のツールウィンドウが取得できませんでした。");
+			}
+			catch (System.Exception e)
+			{
+				Debug.WriteLine($"{e.Message} {e.StackTrace}");
+			}
+			return default;
+		});
+
+	Command TestMainViewModelUtil() =>
+		Command.Factory.Create(() =>
+		{
+			try
+			{
+				var mainVm = ViewModelUtil.GetParentViewModel(View);
+				Debug.Assert(mainVm is not null, "YMM4のメインウィンドウViewModelが取得できませんでした。");
+
+				if (mainVm is not IMainViewModel vm)
+				{
+					Debug.Assert(false, "YMM4のメインウィンドウのViewModelが取得できませんでした。");
+					return default;
+				}
+
+				Debug.WriteLine(
+					$"""
+					MainViewModel Index: {vm.Index}
+					"""
+				);
 			}
 			catch (System.Exception e)
 			{

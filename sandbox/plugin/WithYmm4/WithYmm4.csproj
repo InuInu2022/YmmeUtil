@@ -21,6 +21,10 @@
       <Private>false</Private>
       <CopyLocal>false</CopyLocal>
     </Reference>
+    <Reference Include="$(YMM4_PATH)\YukkuriMovieMaker.Plugin.dll">
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\YmmeUtil.Ymm4\YmmeUtil.Ymm4.csproj">

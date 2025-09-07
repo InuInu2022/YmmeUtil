@@ -7,8 +7,14 @@ namespace YmmeUtil.Sandbox.View;
 /// </summary>
 public partial class MainView : UserControl
 {
-    public MainView()
-    {
-        InitializeComponent();
-    }
+	public MainView()
+	{
+		InitializeComponent();
+
+		this.Loaded += (s, e) =>
+		{
+			if (this.DataContext is MainViewModel vm)
+				vm.AttachView(this);
+		};
+	}
 }
