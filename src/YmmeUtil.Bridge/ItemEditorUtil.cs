@@ -12,13 +12,17 @@ public static class ItemEditorUtil
 
 	public static bool TryGetItemEditor(
 		[NotNullWhen(true)]
-		out WrapItemEditor? itemEditor)
+		out WrapItemEditor? itemEditor,
+		int index = 0
+	)
 	{
 		itemEditor = default;
 
 		if (Ymm4Version.HasDocked)
 		{
-			var mainWinVM = TimelineUtil.GetMainViewModel();
+			var mainWinVM = TimelineUtil.GetMainViewModel(
+				index
+			);
 			if (mainWinVM is null)
 			{
 				return false;

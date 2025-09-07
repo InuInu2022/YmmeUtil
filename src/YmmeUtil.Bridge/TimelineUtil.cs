@@ -29,12 +29,15 @@ public static class TimelineUtil
 	/// <param name="timeLine"></param>
 	/// <returns></returns>
 	public static bool TryGetTimeline(
-		[NotNullWhen(true)] out WrapTimeLine? timeLine)
+		[NotNullWhen(true)] out WrapTimeLine? timeLine,
+		int index = 0
+	)
 	{
 		timeLine = default;
 
 		var hasVmValue = TryGetRawTimelineVmValue(
-			out dynamic? vmValue
+			out dynamic? vmValue,
+			index
 		);
 		if (!hasVmValue)
 		{
@@ -56,16 +59,19 @@ public static class TimelineUtil
 	/// YMM4のメインウィンドウの`TimelineAreaViewModel`から`WrapTimelineItemViewModel`のコレクションを取得できるか試す
 	/// </summary>
 	/// <param name="itemViewModels"></param>
+	/// <param name="index">メインウィンドウViewModelのインデックス。通常は0。</param>
 	/// <returns></returns>
 	public static bool TryGetItemViewModels(
 		[NotNullWhen(true)]
-		out IEnumerable<WrapTimelineItemViewModel>? itemViewModels
+		out IEnumerable<WrapTimelineItemViewModel>? itemViewModels,
+		int index = 0
 	)
 	{
 		itemViewModels = [];
 
 		var hasVmValue = TryGetRawTimelineVmValue(
-			out dynamic? vmValue
+			out dynamic? vmValue,
+			index
 		);
 		if (!hasVmValue)
 		{
@@ -102,13 +108,15 @@ public static class TimelineUtil
 	/// <returns></returns>
 	public static bool TryGetTimelineVmValue(
 		[NotNullWhen(true)]
-		out WrapTimelineViewModel? vmValue
+		out WrapTimelineViewModel? vmValue,
+		int index = 0
 	)
 	{
 		vmValue = default;
 
 		var success = TryGetRawTimelineVmValue(
-			out dynamic? rawVmValue
+			out dynamic? rawVmValue,
+			index
 		);
 		if (!success)
 		{
@@ -125,14 +133,15 @@ public static class TimelineUtil
 	/// <param name="vmValue"></param>
 	/// <returns></returns>
 	static bool TryGetRawTimelineVmValue(
-		[NotNullWhen(true)] out dynamic? vmValue
+		[NotNullWhen(true)] out dynamic? vmValue,
+		int index = 0
 	)
 	{
 		vmValue = default;
 
 		if (Ymm4Version.HasDocked)
 		{
-			var mainWinVM = GetMainViewModel();
+			var mainWinVM = GetMainViewModel(index);
 			if (mainWinVM is null)
 			{
 				return false;
